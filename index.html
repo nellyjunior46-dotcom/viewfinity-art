@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><link id="vf261-mobile-about-hero-preload" rel="preload" as="image" href="assets/media/fb8fa8d74cfc476172-v254.webp" media="(max-width:760px)" fetchpriority="high"/>
 <script id="vf259-early-mobile-video-request">
 /* Start the MP4 before the hero section and the rest of this large page are parsed. */
 (function(){
@@ -4248,7 +4248,7 @@ html,body{margin:0}
    font-size:8px!important;letter-spacing:-.025em!important;
  }
 }
-</style><link rel="preload" as="image" href="assets/media/94e2fe45dd56e9e418.webp" fetchpriority="high"/><link rel="preload" as="image" href="assets/media/7c89e602c7da629475.webp" media="(min-width:761px)" fetchpriority="high"/><link rel="preload" as="image" href="assets/media/7c89e602c7da629475.webp" media="(max-width:760px)" fetchpriority="high"/><script id="vf254-cover-events">(function(){
+</style><link rel="preload" as="image" href="assets/media/94e2fe45dd56e9e418.webp" fetchpriority="high"/><link rel="preload" as="image" href="assets/media/7c89e602c7da629475.webp" media="(min-width:761px)" fetchpriority="high"/><script id="vf254-cover-events">(function(){
   function mark(img){var box=img.parentElement;if(!box)return;
     if(img.complete){box.classList.toggle('vf254-cover-ready',img.naturalWidth>0);box.classList.toggle('vf254-cover-failed',img.naturalWidth===0);}
   }
@@ -4391,7 +4391,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <a class="vf242-top-link" href="#work">WORK</a>
 <a aria-label="VIEWFINITY homepage" class="vf242-mobile-brand" href="#/home"><img width="1048" height="144" alt="VIEWFINITY" decoding="async" src="assets/media/c0b84cfe6d6fdbcf67.png"/></a>
 <a class="vf242-top-link vf242-top-link-last page-link" data-transition-title="ABOUT" href="#/about">ABOUT</a>
-</div><div aria-hidden="true" class="vf208-parallax-frame"><img decoding="async" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></div><video id="vf258-mobile-hero-video" aria-hidden="true" tabindex="-1" muted autoplay loop playsinline webkit-playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><script id="vf259-attach-early-video">(function(){var early=window.__vf259EarlyVideo,original=document.getElementById('vf258-mobile-hero-video');if(early&&original&&original!==early){original.replaceWith(early);window.__vf259EarlyVideo=null;}})();</script>
+</div><div aria-hidden="true" class="vf208-parallax-frame"><picture class="vf261-hero-picture"><source media="(max-width:760px)" srcset="assets/media/fb8fa8d74cfc476172-v254.webp"/><img decoding="async" fetchpriority="high" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></picture></div><video id="vf258-mobile-hero-video" aria-hidden="true" tabindex="-1" muted autoplay loop playsinline webkit-playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><script id="vf259-attach-early-video">(function(){var early=window.__vf259EarlyVideo,original=document.getElementById('vf258-mobile-hero-video');if(early&&original&&original!==early){original.replaceWith(early);window.__vf259EarlyVideo=null;}})();</script>
 <script id="vf258-mobile-hero-video">
 (function(){
  'use strict';
@@ -7811,6 +7811,69 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
   html body #vf-view-home .hero > .vf242-mobile-topbar{
     pointer-events:auto!important;
     z-index:40!important;
+  }
+}
+</style>
+<style id="vf261-about-photo-mobile-fallback">
+/* V2.61 — show the existing About camera portrait while the mobile DIVA hero buffers.
+   The portrait lives behind the video; the photographic desktop hero is unchanged. */
+#vf-view-home .hero .vf208-parallax-frame > .vf261-hero-picture{
+  display:block;
+  width:100%;
+  height:100%;
+}
+@media (max-width:760px){
+  html body #vf-view-home .hero{
+    background:none!important;
+    background-color:#070B08!important;
+  }
+  html body #vf-view-home .hero > .vf208-parallax-frame{
+    display:block!important;
+    visibility:visible!important;
+    position:absolute!important;
+    top:0!important;
+    bottom:0!important;
+    left:0!important;
+    right:0!important;
+    transform:none!important;
+    z-index:0!important;
+    pointer-events:none!important;
+  }
+  html body #vf-view-home .hero .vf208-parallax-frame > .vf261-hero-picture{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+  }
+  html body #vf-view-home .hero .vf208-parallax-frame .vf261-hero-picture > .vf208-parallax-img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:50% 45%!important;
+    transform:none!important;
+    transition:none!important;
+    will-change:auto!important;
+  }
+  /* Gentle forest-toned shading for the photo and headline legibility.
+     The video is never graded or dimmed by this overlay. */
+  html body #vf-view-home .hero:not(.vf258-video-active)::after{
+    background:linear-gradient(180deg,
+      rgba(5,12,8,.42) 0%,
+      rgba(5,12,8,.28) 28%,
+      rgba(5,12,8,.39) 57%,
+      rgba(5,12,8,.42) 78%,
+      rgba(5,12,8,.52) 100%)!important;
+    opacity:1!important;
+    pointer-events:none!important;
+  }
+  html body #vf-view-home .hero.vf258-video-active::after{
+    background:transparent!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  html body #vf-view-home .hero > .vf242-mobile-topbar{
+    z-index:40!important;
+    pointer-events:auto!important;
   }
 }
 </style></body></html>
