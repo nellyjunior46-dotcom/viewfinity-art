@@ -5909,7 +5909,8 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
   function paint(){
     raf=0;
     measure();
-    if(media.matches || vf254Mobile)return;
+    /* V2.65: homepage underlay footer retains parallax on mobile; other mobile reveals stay disabled. */
+    if(media.matches)return;
     const vh=innerHeight;
     for(const obj of footers){
       if(!routeActive(obj.route))continue;
@@ -5926,7 +5927,7 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
       const offset=-(1-progress)*travel;
       obj.route.style.setProperty('--vf146-footer-translate',offset.toFixed(2)+'px');
     }
-    for(const img of movingImages){
+    if(!vf254Mobile)for(const img of movingImages){
       const route=img.closest('.vf-route');if(!route||!routeActive(route))continue;
       const frame=img.parentElement;const r=frame.getBoundingClientRect();
       if(r.bottom<-100||r.top>vh+100)continue;
