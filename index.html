@@ -1,6 +1,42 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><style id="vf255-menu-first-paint-fix">
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/>
+<style id="vf259-mobile-video-first-critical">
+#vf-view-home .hero .vf208-parallax-frame > .vf259-desktop-hero-picture{display:block;width:100%;height:100%}
+@media(max-width:760px){
+ html body #vf-view-home section.hero{background:none!important;background-image:none!important;background-color:#070B08!important}
+ html body #vf-view-home section.hero::before{display:none!important;content:none!important;background-image:none!important}
+ html body #vf-view-home section.hero > .vf208-parallax-frame{display:none!important;visibility:hidden!important}
+}
+</style>
+<script id="vf259-early-mobile-video-request">
+/* Start the MP4 before the hero section and the rest of this large page are parsed. */
+(function(){
+ try{
+   var mobile=window.matchMedia&&matchMedia('(max-width:760px)').matches;
+   var reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+   var isHome=!location.hash || /^(#\/home|#home|#top|#work)$/.test(location.hash);
+   if(!mobile||reduced||!isHome)return;
+   var v=document.createElement('video');
+   v.id='vf258-mobile-hero-video';
+   v.className='vf257-mobile-hero-video';
+   v.setAttribute('aria-hidden','true');v.setAttribute('tabindex','-1');
+   v.setAttribute('muted','');v.setAttribute('autoplay','');
+   v.setAttribute('loop','');v.setAttribute('playsinline','');
+   v.setAttribute('webkit-playsinline','');
+   v.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
+   v.setAttribute('disablepictureinpicture','');
+   v.setAttribute('disableremoteplayback','');
+   v.setAttribute('x-webkit-airplay','deny');
+   v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;
+   v.playsInline=true;v.preload='auto';v.controls=false;
+   v.disablePictureInPicture=true;v.disableRemotePlayback=true;
+   v.src='assets/media/DIVA.mp4';
+   v.load();
+   window.__vf259EarlyVideo=v;
+ }catch(e){}
+})();
+</script><style id="vf255-menu-first-paint-fix">
 /* V2.55: do not show the floating MENU button on top of the unscrolled Home hero.
    Critical CSS runs from first paint, before the routing and scroll controllers initialize. */
 @media (max-width:760px){
@@ -4220,7 +4256,7 @@ html,body{margin:0}
    font-size:8px!important;letter-spacing:-.025em!important;
  }
 }
-</style><link rel="preload" as="image" href="assets/media/94e2fe45dd56e9e418.webp" fetchpriority="high"/><link rel="preload" as="image" href="assets/media/7c89e602c7da629475.webp" fetchpriority="high"/><script id="vf254-cover-events">(function(){
+</style><link rel="preload" as="image" href="assets/media/94e2fe45dd56e9e418.webp" fetchpriority="high"/><link rel="preload" as="image" href="assets/media/7c89e602c7da629475.webp" media="(min-width:761px)" fetchpriority="high"/><script id="vf254-cover-events">(function(){
   function mark(img){var box=img.parentElement;if(!box)return;
     if(img.complete){box.classList.toggle('vf254-cover-ready',img.naturalWidth>0);box.classList.toggle('vf254-cover-failed',img.naturalWidth===0);}
   }
@@ -4363,7 +4399,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <a class="vf242-top-link" href="#work">WORK</a>
 <a aria-label="VIEWFINITY homepage" class="vf242-mobile-brand" href="#/home"><img width="1048" height="144" alt="VIEWFINITY" decoding="async" src="assets/media/c0b84cfe6d6fdbcf67.png"/></a>
 <a class="vf242-top-link vf242-top-link-last page-link" data-transition-title="ABOUT" href="#/about">ABOUT</a>
-</div><div aria-hidden="true" class="vf208-parallax-frame"><img decoding="async" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></div><video id="vf258-mobile-hero-video" aria-hidden="true" tabindex="-1" muted autoplay loop playsinline webkit-playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video>
+</div><div aria-hidden="true" class="vf208-parallax-frame"><picture class="vf259-desktop-hero-picture"><source media="(max-width:760px)" srcset="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="/><img decoding="async" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></picture></div><video id="vf258-mobile-hero-video" aria-hidden="true" tabindex="-1" muted autoplay loop playsinline webkit-playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video><script id="vf259-attach-early-video">(function(){var early=window.__vf259EarlyVideo,original=document.getElementById('vf258-mobile-hero-video');if(early&&original&&original!==early){original.replaceWith(early);window.__vf259EarlyVideo=null;}})();</script>
 <script id="vf258-mobile-hero-video">
 (function(){
  'use strict';
@@ -7769,4 +7805,29 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
     pre.classList.add('is-done');document.body.classList.add('is-entered');
     setTimeout(function(){pre.classList.add('is-gone')},500);
   },mobile?3000:4200);
-})();</script></body></html>
+})();</script>
+<style id="vf259-video-only-mobile-final">
+/* No mountain-photo fallback on phones. Desktop photo and parallax retain their original design. */
+#vf-view-home .hero .vf208-parallax-frame > .vf259-desktop-hero-picture{display:block;width:100%;height:100%}
+@media(max-width:760px){
+ html body #vf-view-home section.hero{
+   background-image:none!important;
+   background-color:#070B08!important;
+ }
+ html body #vf-view-home section.hero::before {
+   display:none!important;content:none!important;background:none!important;
+ }
+ html body #vf-view-home section.hero > div.vf208-parallax-frame {
+   display:none!important;visibility:hidden!important;
+ }
+ html body #vf-view-home section.hero > video#vf258-mobile-hero-video{
+   opacity:0!important;visibility:hidden!important;
+ }
+ html body #vf-view-home section.hero > video#vf258-mobile-hero-video.vf258-is-playing{
+   opacity:1!important;visibility:visible!important;
+ }
+ html body #vf-view-home section.hero.vf258-video-active::after{
+   background:transparent!important;opacity:0!important;
+ }
+}
+</style></body></html>
