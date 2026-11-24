@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton+SC&amp;family=Barlow+Condensed:wght@400;500;600;700;800;900&amp;family=Bebas+Neue&amp;family=Inter:wght@100..900&amp;display=swap"/><style>/* VIEWFINITY / V1.2 / Motion-first editorial design system */
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><style id="vf255-menu-first-paint-fix">
+/* V2.55: do not show the floating MENU button on top of the unscrolled Home hero.
+   Critical CSS runs from first paint, before the routing and scroll controllers initialize. */
+@media (max-width:760px){
+ body.vf255-initial-home #menu-toggle:not([aria-expanded="true"]),
+ body:has(#vf-view-home:not([hidden])):not(.vf242-home-hero-passed) #menu-toggle:not([aria-expanded="true"]){
+   opacity:0!important;
+   visibility:hidden!important;
+   pointer-events:none!important;
+   animation:none!important;
+   transform:translateX(-50%) translateY(18px) scale(.8)!important;
+ }
+ body.vf255-initial-home .site-header{visibility:hidden!important;}
+}
+</style><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton+SC&amp;family=Barlow+Condensed:wght@400;500;600;700;800;900&amp;family=Bebas+Neue&amp;family=Inter:wght@100..900&amp;display=swap"/><style>/* VIEWFINITY / V1.2 / Motion-first editorial design system */
 :root{
   --bg-main:#070B08;--bg-soft:#111611;--surface-1:#18220A;--surface-2:#293412;
   --surface-3:#3D4A1C;--brand-primary:#5A692B;--brand-secondary:#84953F;
@@ -4214,7 +4228,7 @@ html,body{margin:0}
   document.addEventListener('error',function(e){if(e.target.matches?.('.vf254-priority-cover'))(e.target.parentElement?.classList.remove('vf254-cover-ready'),e.target.parentElement?.classList.add('vf254-cover-failed'))},true);
   document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.vf254-priority-cover').forEach(mark)}, {once:true});
 })();</script><meta property="og:type" content="website"/><meta property="og:site_name" content="VIEWFINITY"/><meta property="og:title" content="VIEWFINITY — Creating Beyond Limits"/><meta property="og:description" content="A creative space for bold thinkers and visual storytellers."/><meta property="og:url" content="https://www.viewfinity.art/"/><meta property="og:image" content="https://www.viewfinity.art/assets/media/7c89e602c7da629475.webp"/><meta name="twitter:card" content="summary_large_image"/></head>
-<body>
+<body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
 /* V2.02 — flipped mountain hero, stronger text overlay, scale reveal on home */
 #vf-view-home{
@@ -4691,7 +4705,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
     // Page navigation runs in shared navigation.js (one-way cover/reveal).
     // Desktop starts with Work / About / Contact text links. Circle appears on scroll.
     let scrollPending=false;
-    const updateScroll=()=>{scrollPending=false;const visible=innerWidth<=760||scrollY>Math.max(300,Math.min(innerHeight*.7,700));toggle.classList.toggle('is-visible',visible||menuOpen)};
+    const updateScroll=()=>{scrollPending=false;const home=document.getElementById('vf-view-home');const visible=innerWidth<=760?(home?.hidden!==false||home.querySelector('.hero')?.getBoundingClientRect().bottom<=72):scrollY>Math.max(300,Math.min(innerHeight*.7,700));toggle.classList.toggle('is-visible',visible||menuOpen)};
     window.addEventListener('scroll',()=>{if(!scrollPending){scrollPending=true;requestAnimationFrame(updateScroll)}},{passive:true});
     window.addEventListener('resize',updateScroll,{passive:true});updateScroll();
     // Playful desktop links: small magnetic offset, tiny dot comes from CSS.
@@ -7378,6 +7392,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
   const small=window.innerWidth<=760;
   document.body.classList.toggle('vf242-home-route',active&&small);
   document.body.classList.toggle('vf242-home-hero-passed',active&&small&&hero.getBoundingClientRect().bottom<=72);
+  document.body.classList.remove('vf255-initial-home');
  }
  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
  window.addEventListener('scroll',schedule,{passive:true});
