@@ -7740,7 +7740,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
   }
 }
 </style>
-<script id="vf262-image-only-mobile-parallax">
+<script id="vf263-subpixel-smooth-mobile-parallax">
 (function(){
  'use strict';
  var home=document.getElementById('vf-view-home');
@@ -7749,36 +7749,63 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
  if(!home||!hero||!picture||!window.matchMedia||!window.requestAnimationFrame)return;
  var mobile=matchMedia('(max-width:760px)');
  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
- var scheduled=false,previous=null;
- function paint(){
-   scheduled=false;
-   if(!mobile.matches||reduced.matches||home.hidden){
-     if(previous!==0){
-       picture.style.setProperty('--vf262-photo-shift','0px');
-       previous=0;
-     }
+ var raf=0, current=0, previousTime=0;
+ var running=false;
+ var strength=.45, scale=1.09;
+ function eligible(){
+   return mobile.matches&&!reduced.matches&&!home.hidden;
+ }
+ function reset(){
+   if(raf)cancelAnimationFrame(raf);
+   raf=0;running=false;previousTime=0;current=0;
+   /* Remove mobile inline transform on desktop / reduced-motion. */
+   picture.style.removeProperty('transform');
+   picture.style.removeProperty('--vf262-photo-shift');
+ }
+ function tick(time){
+   raf=0;
+   if(!eligible()){
+     reset();
      return;
    }
    var rect=hero.getBoundingClientRect();
-   if(rect.bottom<0||rect.top>innerHeight)return;
-   /* Move the portrait downward at 45% of the normal page scroll speed:
-      an unmistakable parallax while the text scrolls naturally. */
+   if(rect.bottom<=0||rect.top>=innerHeight){
+     running=false;previousTime=0;
+     return;
+   }
    var traveled=Math.max(0,Math.min(rect.height,-rect.top));
-   var shift=Math.round(traveled*.45);
-   if(shift!==previous){
-     picture.style.setProperty('--vf262-photo-shift',shift+'px');
-     previous=shift;
+   /* Keep the actual fractional scroll distance: never round to whole pixels. */
+   var target=traveled*strength;
+   var dt=previousTime?Math.min(64,Math.max(1,time-previousTime)):16.67;
+   previousTime=time;
+   /* Time-corrected smoothing stays consistent on 60/90/120Hz screens. */
+   var easing=1-Math.exp(-dt/72);
+   var difference=target-current;
+   current+=difference*easing;
+   if(Math.abs(target-current)<.015)current=target;
+   /* One GPU-composited transform, no layout-changing top/left/height updates. */
+   picture.style.setProperty('transform',
+     'translate3d(0,'+current.toFixed(3)+'px,0) scale('+scale+')','important');
+   if(Math.abs(target-current)>.015){
+     raf=requestAnimationFrame(tick);
+   }else{
+     running=false;
+     previousTime=0;
    }
  }
  function schedule(){
-   if(scheduled)return;
-   scheduled=true;
-   requestAnimationFrame(paint);
+   if(!eligible()){
+     reset();
+     return;
+   }
+   if(raf)return;
+   running=true;
+   raf=requestAnimationFrame(tick);
  }
- addEventListener('scroll',schedule,{passive:true});
- addEventListener('resize',schedule,{passive:true});
- addEventListener('hashchange',schedule);
- addEventListener('pageshow',schedule);
+ window.addEventListener('scroll',schedule,{passive:true});
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('hashchange',schedule);
+ window.addEventListener('pageshow',schedule);
  if(mobile.addEventListener)mobile.addEventListener('change',schedule);
  else if(mobile.addListener)mobile.addListener(schedule);
  if(reduced.addEventListener)reduced.addEventListener('change',schedule);
