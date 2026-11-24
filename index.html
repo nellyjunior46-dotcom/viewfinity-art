@@ -4830,7 +4830,7 @@ $('#image-file').addEventListener('change',async e=>{const file=e.target.files?.
  homeTransitionMark.alt='VIEWFINITY';
  homeTransitionMark.decoding='async';
  homeTransitionMark.src='assets/media/be5f484c23a19e9923.png';
- const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; const vf254QuickMobile=matchMedia('(max-width:760px)').matches;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; const vf254QuickMobile=false; /* V2.64: restore full cinematic wipe timing on mobile. */
  const pages={home:'Home',about:'About',lab:'Color Lab',classroom:'Classroom','classroom-hub':'Classroom',contact:'Contact','graphic-design':'Graphic Design',photography:'Photography',store:'Asset Store',asset:'Asset Collection',checkout:'Checkout',palettes:'Color Palettes',studio:'Live Color Preview',colors:'Understand Colors',color:'Understand Colors',brands:'Colors from Brands',brand:'Brand Colors'};
  let current='home',busy=false,queuedNavigation=null;let pendingEduSlug=null;
  const routeFromHash=()=>{if(location.hash==='#/classroom/learn')return 'classroom-hub';const m=location.hash.match(/^#\/(home|about|lab|classroom|palettes|studio|colors|color|brands|brand|contact|graphic-design|photography|store|asset|checkout)(?:$|\/)/);return m?m[1]:'home'};
@@ -7740,7 +7740,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
   }
 }
 </style>
-<script id="vf263-subpixel-smooth-mobile-parallax">
+<script id="vf264-subpixel-no-bounce-parallax">
 (function(){
  'use strict';
  var home=document.getElementById('vf-view-home');
@@ -7749,58 +7749,35 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
  if(!home||!hero||!picture||!window.matchMedia||!window.requestAnimationFrame)return;
  var mobile=matchMedia('(max-width:760px)');
  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
- var raf=0, current=0, previousTime=0;
- var running=false;
- var strength=.45, scale=1.09;
- function eligible(){
-   return mobile.matches&&!reduced.matches&&!home.hidden;
- }
- function reset(){
-   if(raf)cancelAnimationFrame(raf);
-   raf=0;running=false;previousTime=0;current=0;
-   /* Remove mobile inline transform on desktop / reduced-motion. */
+ var raf=0;
+ var lastValue=null;
+ var strength=.45;
+ function eligible(){return mobile.matches&&!reduced.matches&&!home.hidden;}
+ function clear(){
+   if(raf){cancelAnimationFrame(raf);raf=0;}
+   lastValue=null;
    picture.style.removeProperty('transform');
    picture.style.removeProperty('--vf262-photo-shift');
  }
- function tick(time){
+ function repaint(){
    raf=0;
-   if(!eligible()){
-     reset();
-     return;
-   }
+   if(!eligible()){clear();return;}
    var rect=hero.getBoundingClientRect();
-   if(rect.bottom<=0||rect.top>=innerHeight){
-     running=false;previousTime=0;
-     return;
-   }
-   var traveled=Math.max(0,Math.min(rect.height,-rect.top));
-   /* Keep the actual fractional scroll distance: never round to whole pixels. */
-   var target=traveled*strength;
-   var dt=previousTime?Math.min(64,Math.max(1,time-previousTime)):16.67;
-   previousTime=time;
-   /* Time-corrected smoothing stays consistent on 60/90/120Hz screens. */
-   var easing=1-Math.exp(-dt/72);
-   var difference=target-current;
-   current+=difference*easing;
-   if(Math.abs(target-current)<.015)current=target;
-   /* One GPU-composited transform, no layout-changing top/left/height updates. */
-   picture.style.setProperty('transform',
-     'translate3d(0,'+current.toFixed(3)+'px,0) scale('+scale+')','important');
-   if(Math.abs(target-current)>.015){
-     raf=requestAnimationFrame(tick);
-   }else{
-     running=false;
-     previousTime=0;
+   /* Clamp elastic/negative mobile overscroll to zero; the photo must not spring. */
+   var topScroll=Math.max(0,window.scrollY||window.pageYOffset||0);
+   var traveled=(topScroll<=1||rect.top>=0)?0:Math.min(rect.height,Math.max(0,-rect.top));
+   var value=traveled*strength;
+   /* Fractional pixels keep tiny swipes fluid. Direct tracking removes the
+      delayed easing tail that made the photo appear to bounce back on release. */
+   if(lastValue===null||Math.abs(value-lastValue)>.001){
+     picture.style.setProperty('transform',
+       'translate3d(0,'+value.toFixed(3)+'px,0) scale(1.09)','important');
+     lastValue=value;
    }
  }
  function schedule(){
-   if(!eligible()){
-     reset();
-     return;
-   }
-   if(raf)return;
-   running=true;
-   raf=requestAnimationFrame(tick);
+   if(!eligible()){clear();return;}
+   if(!raf)raf=requestAnimationFrame(repaint);
  }
  window.addEventListener('scroll',schedule,{passive:true});
  window.addEventListener('resize',schedule,{passive:true});
