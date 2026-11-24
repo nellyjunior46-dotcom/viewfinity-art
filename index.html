@@ -4227,7 +4227,30 @@ html,body{margin:0}
   document.addEventListener('load',function(e){if(e.target.matches?.('.vf254-priority-cover'))mark(e.target)},true);
   document.addEventListener('error',function(e){if(e.target.matches?.('.vf254-priority-cover'))(e.target.parentElement?.classList.remove('vf254-cover-ready'),e.target.parentElement?.classList.add('vf254-cover-failed'))},true);
   document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.vf254-priority-cover').forEach(mark)}, {once:true});
-})();</script><meta property="og:type" content="website"/><meta property="og:site_name" content="VIEWFINITY"/><meta property="og:title" content="VIEWFINITY — Creating Beyond Limits"/><meta property="og:description" content="A creative space for bold thinkers and visual storytellers."/><meta property="og:url" content="https://www.viewfinity.art/"/><meta property="og:image" content="https://www.viewfinity.art/assets/media/7c89e602c7da629475.webp"/><meta name="twitter:card" content="summary_large_image"/></head>
+})();</script><meta property="og:type" content="website"/><meta property="og:site_name" content="VIEWFINITY"/><meta property="og:title" content="VIEWFINITY — Creating Beyond Limits"/><meta property="og:description" content="A creative space for bold thinkers and visual storytellers."/><meta property="og:url" content="https://www.viewfinity.art/"/><meta property="og:image" content="https://www.viewfinity.art/assets/media/7c89e602c7da629475.webp"/><meta name="twitter:card" content="summary_large_image"/><style id="vf256-mobile-nav-stacking-fix">
+/* V2.56 — mobile-only navigation layering. Keep all existing sizes, type and motion. */
+@media (max-width:760px) {
+  /* WORK / ABOUT / logo are direct hero children. Older generic hero rules
+     overwrite their z-index to 2, allowing .hero-content to intercept taps. */
+  #vf-view-home .hero > .vf242-mobile-topbar {
+    z-index:40!important;
+    pointer-events:auto!important;
+  }
+  #vf-view-home .hero > .vf242-mobile-topbar > a {
+    position:relative!important;
+    z-index:1!important;
+    pointer-events:auto!important;
+  }
+  /* The menu must never sit above the intro loader or a page's wipe transition.
+     It remains accessible when the full-screen navigation menu itself is open. */
+  body:has(#preloader:not(.is-done):not(.is-gone)) #menu-toggle,
+  body:has(#vf-curtain-system.is-active) #menu-toggle {
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+}
+</style></head>
 <body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
 /* V2.02 — flipped mountain hero, stronger text overlay, scale reveal on home */
