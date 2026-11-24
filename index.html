@@ -4250,6 +4250,49 @@ html,body{margin:0}
     pointer-events:none!important;
   }
 }
+</style>
+<style id="vf258-mobile-hero-style">
+/* V2.58 — early-loading mobile hero media: never impact the desktop photograph. */
+@media (max-width:760px) {
+  #vf-view-home .hero > video#vf258-mobile-hero-video {
+    display:block!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+    z-index:1!important;
+    transform:none!important;
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+    user-select:none!important;
+    -webkit-user-select:none!important;
+    -webkit-touch-callout:none!important;
+    transition:opacity .4s ease!important;
+  }
+  #vf-view-home .hero > video#vf258-mobile-hero-video.vf258-is-playing {
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  /* Respect the exact opacity and color baked into the CapCut video. */
+  #vf-view-home .hero.vf258-video-active::after {
+    background:transparent!important;
+    opacity:0!important;
+    pointer-events:none!important;
+  }
+  #vf-view-home .hero > .hero-content {z-index:3!important;}
+  #vf-view-home .hero > .vf242-mobile-topbar {z-index:40!important;pointer-events:auto!important;}
+  #vf-view-home .hero > .vf242-mobile-caption {z-index:5!important;}
+}
+@media (min-width:761px) {
+ #vf-view-home .hero > video#vf258-mobile-hero-video {display:none!important;}
+}
+@media (prefers-reduced-motion:reduce) {
+ #vf-view-home .hero > video#vf258-mobile-hero-video {display:none!important;}
+}
 </style></head>
 <body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
@@ -4320,7 +4363,75 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <a class="vf242-top-link" href="#work">WORK</a>
 <a aria-label="VIEWFINITY homepage" class="vf242-mobile-brand" href="#/home"><img width="1048" height="144" alt="VIEWFINITY" decoding="async" src="assets/media/c0b84cfe6d6fdbcf67.png"/></a>
 <a class="vf242-top-link vf242-top-link-last page-link" data-transition-title="ABOUT" href="#/about">ABOUT</a>
-</div><div aria-hidden="true" class="vf208-parallax-frame"><img decoding="async" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></div><div class="shell hero-content"><div class="hero-stage"><img decoding="async" width="1100" height="950" alt="" aria-hidden="true" class="hero-orb" src="assets/media/5724f2dab16e45d2cf.webp"/><h1 class="hero-title" id="hero-heading"><span class="hero-line"><span class="hero-line-inner">CREATING</span></span><span class="hero-line"><span class="hero-line-inner">BEYOND</span></span><span class="hero-line"><span class="hero-line-inner accent">LIMIT<span class="italic-cue">.</span></span></span></h1></div><p class="hero-manifesto">A space for bold thinkers<br/>and visual storytellers.</p></div><div aria-label="Studio introduction" class="vf242-mobile-caption">
+</div><div aria-hidden="true" class="vf208-parallax-frame"><img decoding="async" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></div><video id="vf258-mobile-hero-video" aria-hidden="true" tabindex="-1" muted autoplay loop playsinline webkit-playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"></video>
+<script id="vf258-mobile-hero-video">
+(function(){
+ 'use strict';
+ var video=document.getElementById('vf258-mobile-hero-video');
+ var home=document.getElementById('vf-view-home');
+ var hero=video&&video.closest('.hero');
+ if(!video||!home||!hero||!window.matchMedia)return;
+ var mobile=matchMedia('(max-width:760px)');
+ var reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ var inView=true, failed=false;
+ function eligible(){return mobile.matches&&!reduced.matches;}
+ function routeVisible(){return !home.hidden&&getComputedStyle(home).display!=='none';}
+ function setVisible(yes){
+   video.classList.toggle('vf258-is-playing',yes);
+   hero.classList.toggle('vf258-video-active',yes);
+ }
+ function play(){
+   if(!eligible()){
+     video.pause();
+     setVisible(false);
+     if(video.hasAttribute('src')){video.removeAttribute('src');video.load();}
+     failed=false;
+     return;
+   }
+   if(failed)return;
+   /* Start the MP4 request immediately on mobile, before the page preloader exits. */
+   video.muted=true;
+   video.defaultMuted=true;
+   video.controls=false;
+   video.disablePictureInPicture=true;
+   video.disableRemotePlayback=true;
+   if(!video.getAttribute('src')){
+     video.src='assets/media/DIVA.mp4';
+     video.load();
+   }
+   if(!routeVisible()||document.hidden||!inView){
+     video.pause();
+     return;
+   }
+   var attempt=video.play();
+   if(attempt&&typeof attempt.catch==='function')attempt.catch(function(){});
+ }
+ video.addEventListener('playing',function(){
+   if(eligible()&&routeVisible()&&!document.hidden){setVisible(true);}
+ });
+ video.addEventListener('error',function(){failed=true;setVisible(false);});
+ video.addEventListener('contextmenu',function(e){e.preventDefault();});
+ video.addEventListener('canplay',function(){
+   if(eligible()&&routeVisible()&&video.paused)play();
+ });
+ if('IntersectionObserver' in window){
+   new IntersectionObserver(function(entries){
+     inView=!!entries[0]&&entries[0].isIntersecting;
+     play();
+   },{rootMargin:'200px 0px',threshold:0}).observe(hero);
+ }
+ if(mobile.addEventListener)mobile.addEventListener('change',play);
+ else if(mobile.addListener)mobile.addListener(play);
+ if(reduced.addEventListener)reduced.addEventListener('change',play);
+ else if(reduced.addListener)reduced.addListener(play);
+ new MutationObserver(play).observe(home,{attributes:true,attributeFilter:['hidden','class','style']});
+ document.addEventListener('visibilitychange',play);
+ window.addEventListener('hashchange',play);
+ window.addEventListener('pageshow',play);
+ window.addEventListener('resize',play,{passive:true});
+ play();
+})();
+</script><div class="shell hero-content"><div class="hero-stage"><img decoding="async" width="1100" height="950" alt="" aria-hidden="true" class="hero-orb" src="assets/media/5724f2dab16e45d2cf.webp"/><h1 class="hero-title" id="hero-heading"><span class="hero-line"><span class="hero-line-inner">CREATING</span></span><span class="hero-line"><span class="hero-line-inner">BEYOND</span></span><span class="hero-line"><span class="hero-line-inner accent">LIMIT<span class="italic-cue">.</span></span></span></h1></div><p class="hero-manifesto">A space for bold thinkers<br/>and visual storytellers.</p></div><div aria-label="Studio introduction" class="vf242-mobile-caption">
 <div class="vf242-caption-left"><span>VIEWFINITY® STUDIO</span><strong>STORIES IN MOTION</strong></div>
 <div class="vf242-caption-right"><span>BASED IN TANZANIA</span><strong>WORKING GLOBALLY</strong></div>
 </div></section>
@@ -7658,152 +7769,4 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
     pre.classList.add('is-done');document.body.classList.add('is-entered');
     setTimeout(function(){pre.classList.add('is-gone')},500);
   },mobile?3000:4200);
-})();</script>
-<style id="vf257-mobile-hero-video-style">
-/* V2.57 — DIVA cinematic mobile hero; desktop photographic hero untouched. */
-@media (max-width:760px) {
-  #vf-view-home .hero > video.vf257-mobile-hero-video {
-    position:absolute!important;
-    display:block!important;
-    inset:0!important;
-    width:100%!important;
-    height:100%!important;
-    max-width:none!important;
-    object-fit:cover!important;
-    object-position:center center!important;
-    z-index:1!important;
-    transform:none!important;
-    pointer-events:none!important;
-    opacity:0!important;
-    visibility:hidden!important;
-    transition:opacity .35s ease!important;
-  }
-  #vf-view-home .hero > video.vf257-mobile-hero-video.vf257-visible {
-    opacity:1!important;
-    visibility:visible!important;
-  }
-  /* Original CapCut grade/opacity stays intact. No additional web darkening. */
-  #vf-view-home .hero.vf257-video-playing::after {
-    background:transparent!important;
-  }
-  /* Explicit hero stacking: keep all links/copy above media. */
-  #vf-view-home .hero > .hero-content {z-index:3!important;}
-  #vf-view-home .hero > .vf242-mobile-topbar {z-index:40!important;pointer-events:auto!important;}
-  #vf-view-home .hero > .vf242-mobile-caption {z-index:5!important;}
-}
-@media (min-width:761px) {
-  #vf-view-home .hero > video.vf257-mobile-hero-video {display:none!important;}
-}
-@media (prefers-reduced-motion:reduce) {
-  #vf-view-home .hero > video.vf257-mobile-hero-video {display:none!important;}
-}
-</style>
-<script id="vf257-mobile-hero-video-script">
-(function(){
- 'use strict';
- var home=document.getElementById('vf-view-home');
- var hero=home&&home.querySelector('.hero');
- var photo=hero&&hero.querySelector('.vf208-parallax-frame');
- if(!home||!hero||!photo||!window.matchMedia)return;
- var mobile=matchMedia('(max-width:760px)');
- var reduced=matchMedia('(prefers-reduced-motion: reduce)');
- var preloader=document.getElementById('preloader');
- var video=null, inView=true, failed=false;
- function isHomeShown(){
-   return !home.hidden && getComputedStyle(home).display!=='none';
- }
- function allowed(){
-   return mobile.matches && !reduced.matches &&
-     !(navigator.connection && navigator.connection.saveData);
- }
- function reset(){
-   if(video){
-     video.pause();
-     video.removeAttribute('src');
-     video.load();
-     video.remove();
-     video=null;
-   }
-   hero.classList.remove('vf257-video-playing');
-   failed=false;
- }
- function createVideo(){
-   if(video)return;
-   video=document.createElement('video');
-   video.className='vf257-mobile-hero-video';
-   video.setAttribute('aria-hidden','true');
-   video.setAttribute('tabindex','-1');
-   video.setAttribute('muted','');
-   video.setAttribute('autoplay','');
-   video.setAttribute('loop','');
-   video.setAttribute('playsinline','');
-   video.setAttribute('webkit-playsinline','');
-   video.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
-   video.setAttribute('disablepictureinpicture','');
-   video.setAttribute('disableremoteplayback','');
-   video.setAttribute('x-webkit-airplay','deny');
-   video.muted=true;
-   video.defaultMuted=true;
-   video.volume=0;
-   video.autoplay=true;
-   video.loop=true;
-   video.playsInline=true;
-   video.preload='none';
-   video.controls=false;
-   video.disablePictureInPicture=true;
-   video.disableRemotePlayback=true;
-   video.addEventListener('contextmenu',function(e){e.preventDefault();});
-   video.addEventListener('playing',function(){
-     if(!allowed()||!isHomeShown()||document.hidden)return;
-     video.classList.add('vf257-visible');
-     hero.classList.add('vf257-video-playing');
-   });
-   video.addEventListener('error',function(){
-     failed=true;
-     video.classList.remove('vf257-visible');
-     hero.classList.remove('vf257-video-playing');
-   });
-   photo.insertAdjacentElement('afterend',video);
- }
- function sync(){
-   if(!allowed()){reset();return;}
-   if(!isHomeShown()||document.hidden||!inView){
-     if(video)video.pause();
-     return;
-   }
-   /* Keep the lightweight photo visible throughout the initial page load. */
-   if(preloader&&!preloader.classList.contains('is-done')&&!preloader.classList.contains('is-gone'))return;
-   if(failed)return;
-   if(!video)createVideo();
-   if(!video.hasAttribute('src')){
-     video.src='assets/media/DIVA.mp4';
-     video.load();
-   }
-   video.muted=true;
-   video.volume=0;
-   var playResult=video.play();
-   if(playResult&&typeof playResult.catch==='function')playResult.catch(function(){});
- }
- if('IntersectionObserver' in window){
-   var io=new IntersectionObserver(function(entries){
-     inView=!!entries[0]&&entries[0].isIntersecting;
-     sync();
-   },{rootMargin:'100px 0px',threshold:0.01});
-   io.observe(hero);
- }
- if(preloader)new MutationObserver(sync).observe(preloader,{attributes:true,attributeFilter:['class']});
- new MutationObserver(sync).observe(home,{attributes:true,attributeFilter:['hidden','style','class']});
- window.addEventListener('hashchange',sync);
- window.addEventListener('popstate',sync);
- window.addEventListener('resize',sync,{passive:true});
- window.addEventListener('pageshow',sync);
- document.addEventListener('visibilitychange',sync);
- function watchQuery(mq){
-   if(mq.addEventListener)mq.addEventListener('change',sync);
-   else if(mq.addListener)mq.addListener(sync);
- }
- watchQuery(mobile);
- watchQuery(reduced);
- sync();
-})();
-</script></body></html>
+})();</script></body></html>
