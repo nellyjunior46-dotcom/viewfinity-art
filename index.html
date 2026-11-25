@@ -7655,8 +7655,18 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
 </style><style id="vf254-patch-two">
 #shop .vfs-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover,#vf-view-store .vfs-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover,#vf-view-asset .vfs-detail-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover{display:none!important;}
 @media(max-width:760px){
-  /* Match the menu wipe timing to the faster mobile page transition. */
-  #main-navigation.menu-overlay{transition:transform .52s cubic-bezier(.76,0,.21,1)!important;}
+  /* Symmetric bottom-up open and top-down close: retain visibility until the full
+     reverse transform finishes. The old transform-only override hid it instantly. */
+  #main-navigation.menu-overlay{
+    transition:transform .52s cubic-bezier(.76,0,.21,1),
+               border-radius .52s cubic-bezier(.76,0,.21,1),
+               visibility 0s .52s!important;
+  }
+  #main-navigation.menu-overlay.is-open{
+    transition:transform .52s cubic-bezier(.76,0,.21,1),
+               border-radius .52s cubic-bezier(.76,0,.21,1),
+               visibility 0s 0s!important;
+  }
 }
 </style><script id="vf254-load-watchdog">(function(){
   // An in-app browser may throttle animation frames. Never trap visitors behind the intro.
