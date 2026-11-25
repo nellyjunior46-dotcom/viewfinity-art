@@ -5880,13 +5880,13 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
     if(el.closest('button,input,textarea,select,[role="dialog"],.vf128-modal,.vf128-drawer'))continue;
     if(items.some(parent=>parent!==el&&parent.contains(el)&&parent.matches('.vf136-feature-copy,.vf141-teaser-copy')))continue;
     revealTargets.push(el);
-    if(!vf254Mobile)el.classList.add('vf145-reveal');
+    if(!vf254Mobile || el.closest('#vf-view-home'))el.classList.add('vf145-reveal');
   }
   const revealObserver=new IntersectionObserver(entries=>{
     for(const e of entries){e.target.classList.toggle('vf145-visible',e.isIntersecting)}
   },{threshold:0.045,rootMargin:'-14px 0px -32px 0px'});
   for(const el of revealTargets)revealObserver.observe(el);
-  if(!media.matches && !vf254Mobile)document.documentElement.classList.add('vf145-motion');
+  if(!media.matches)document.documentElement.classList.add('vf145-motion');
   // Independent translate property avoids replacing existing hover transforms and
   // does not alter brightness, saturation, hue, or the original image pixels.
   for(const el of document.querySelectorAll('#vf-view-home .project-media img')){
@@ -5927,12 +5927,12 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
       const offset=-(1-progress)*travel;
       obj.route.style.setProperty('--vf146-footer-translate',offset.toFixed(2)+'px');
     }
-    if(!vf254Mobile)for(const img of movingImages){
+    for(const img of movingImages){
       const route=img.closest('.vf-route');if(!route||!routeActive(route))continue;
       const frame=img.parentElement;const r=frame.getBoundingClientRect();
       if(r.bottom<-100||r.top>vh+100)continue;
       const fraction=clamp((r.top+r.height*.5-vh*.5)/(vh+r.height),-.5,.5);
-      img.style.setProperty('--vf145-depth-y',(-fraction*62).toFixed(1)+'px');
+      img.style.setProperty('--vf145-depth-y',(-fraction*(vf254Mobile?38:62)).toFixed(vf254Mobile?3:1)+'px');
     }
   }
   function schedule(){if(!raf)raf=requestAnimationFrame(paint)}
@@ -5945,7 +5945,7 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
   const change=new MutationObserver(schedule);
   for(const route of routes)change.observe(route,{attributes:true,attributeFilter:['hidden']});
   media.addEventListener?.('change',()=>{
-    document.documentElement.classList.toggle('vf145-motion',!media.matches && !vf254Mobile);
+    document.documentElement.classList.toggle('vf145-motion',!media.matches);
     if(media.matches){for(const obj of footers)obj.route.style.setProperty('--vf146-footer-translate','0px');}
     schedule();
   });
@@ -5965,6 +5965,7 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
   function addTargets(){
     document.querySelectorAll(selectors).forEach(el=>{
       if(el.closest('#vf-view-contact'))return; // Never register Contact for scroll motion.
+      if(vf254Mobile && !el.closest('#vf-view-home'))return; // Mobile homepage only.
       if(el.closest('footer, [role="dialog"], .vf128-modal, .vf128-drawer'))return;
       if(el.matches('.vf-about-parallax'))return;
       if(!targets.has(el)){
@@ -5980,7 +5981,7 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
   function paint(){
     frame=0;
     if(needsRefresh){needsRefresh=false;addTargets();}
-    const reduce=motionPreference.matches||vf254Mobile;
+    const reduce=motionPreference.matches;
     documentRoot.classList.toggle('vf151-motion',!reduce);
     if(reduce){
       for(const el of targets)el.style.removeProperty('--vf151-shift');
@@ -6005,8 +6006,8 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
       // No opacity ramp, no one-shot entrance, and no direction toggles.
       const distance=vh*0.77+Math.min(rect.height,vh*.43)*.17;
       const progress=clamp((vh*.96-naturalTop)/Math.max(1,distance),0,1);
-      const lift=clamp(vh*.055,24,48);
-      const settle=clamp(vh*.017,7,15);
+      const lift=vf254Mobile?clamp(vh*.032,15,27):clamp(vh*.055,24,48);
+      const settle=vf254Mobile?clamp(vh*.012,5,11):clamp(vh*.017,7,15);
       const y=lift-(lift+settle)*progress;
       updates.push([el,y.toFixed(2)+'px']);
     }
@@ -6015,7 +6016,7 @@ html.vf145-motion #vf-view-about .vf-about-reveal.vf-in:not(.vf119-intro-media):
   function requestPaint(){if(!frame)frame=requestAnimationFrame(paint);}
   function refresh(){needsRefresh=true;requestPaint();}
   addTargets();
-  documentRoot.classList.toggle('vf151-motion',!motionPreference.matches&&!vf254Mobile);
+  documentRoot.classList.toggle('vf151-motion',!motionPreference.matches);
   window.addEventListener('scroll',requestPaint,{passive:true});
   window.addEventListener('resize',requestPaint,{passive:true});
   document.addEventListener('visibilitychange',requestPaint);
@@ -7638,8 +7639,12 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
 @media(max-width:760px){
  /* Mobile WebViews benefit from zero scroll-JS transform work: no flashing text
     or image layers jumping during swipe/overscroll. Static layout is identical. */
- html.vf145-motion .vf145-reveal,html.vf151-motion .vf151-scroll-element,
- .vf145-reveal,.vf151-scroll-element,.scroll-reveal,.vf-about-reveal{
+ html.vf145-motion .vf-route:not(#vf-view-home) .vf145-reveal,
+ html.vf151-motion .vf-route:not(#vf-view-home) .vf151-scroll-element,
+ .vf-route:not(#vf-view-home) .vf145-reveal,
+ .vf-route:not(#vf-view-home) .vf151-scroll-element,
+ .vf-route:not(#vf-view-home) .scroll-reveal,
+ .vf-route:not(#vf-view-home) .vf-about-reveal{
    opacity:1!important;translate:none!important;transform:none!important;
    --vf151-shift:0px!important;transition-property:background-color,color,box-shadow,border-color!important;
  }
@@ -7886,4 +7891,35 @@ svg.vf255-flat-icon.vf255-filled{fill:currentColor;stroke:none;}
  else start();
 })();
 </script>
+<style id="vf266-mobile-home-motion-parity">
+@media (max-width:760px) and (prefers-reduced-motion:no-preference){
+ html.vf151-motion #vf-view-home .vf151-scroll-element,
+ html.vf151-motion #vf-view-home .vf151-scroll-element.vf145-visible,
+ html.vf151-motion #vf-view-home .vf151-scroll-element.is-inview{
+   opacity:1!important;
+   translate:0 var(--vf151-shift,0px)!important;
+   transform:none!important;
+   transition:translate .13s cubic-bezier(.22,.73,.34,1)!important;
+   transition-delay:0ms!important;
+   will-change:translate;
+ }
+ #vf-view-home .project-media img.vf145-depth-image{
+   translate:0 var(--vf145-depth-y,0px);
+   transition:transform .9s var(--ease-out),filter .5s ease,translate .12s linear;
+   will-change:translate;
+ }
+ /* Hero entrance scale lives on the image, independent of mobile scroll parallax. */
+ html body #vf-view-home .hero .vf208-parallax-frame > picture.vf261-hero-picture > img.vf208-parallax-img{
+   transform:scale(1.065)!important;
+   transition:transform 1.45s cubic-bezier(.16,.8,.22,1)!important;
+   transform-origin:50% 50%!important;
+ }
+ html body.is-entered #vf-view-home .hero .vf208-parallax-frame > picture.vf261-hero-picture > img.vf208-parallax-img{
+   transform:scale(1)!important;
+ }
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce){
+ #vf-view-home .project-media img.vf145-depth-image{translate:none!important;transition:none!important;will-change:auto!important;}
+}
+</style>
 </body></html>
