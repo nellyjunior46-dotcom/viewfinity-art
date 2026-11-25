@@ -7405,7 +7405,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
  #main-navigation .menu-inner{padding-top:clamp(64px,11svh,112px)!important;padding-bottom:max(60px,env(safe-area-inset-bottom))!important;}
  #main-navigation .menu-link-content{transition-delay:0s!important;}
  #main-navigation.menu-overlay.is-open .menu-link-content{transition-delay:calc(.24s + var(--i,0) * .045s)!important;}
- body.vf242-home-route #menu-toggle[aria-expanded="true"]{z-index:180!important;}
+ body.vf242-home-route #menu-toggle[aria-expanded="true"]{z-index:2147483001!important;}
 }
 </style>
 <script id="vf242-mobile-hero-navigation">
@@ -7655,16 +7655,16 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
 </style><style id="vf254-patch-two">
 #shop .vfs-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover,#vf-view-store .vfs-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover,#vf-view-asset .vfs-detail-art[data-vf-bundle="ui-sound-effects"].vf254-cover-failed img.vf254-priority-cover{display:none!important;}
 @media(max-width:760px){
-  /* Symmetric bottom-up open and top-down close: retain visibility until the full
+  /* Restore original elegant timing in both directions; keep visibility until the full
      reverse transform finishes. The old transform-only override hid it instantly. */
   #main-navigation.menu-overlay{
-    transition:transform .52s cubic-bezier(.76,0,.21,1),
-               border-radius .52s cubic-bezier(.76,0,.21,1),
-               visibility 0s .52s!important;
+    transition:transform .86s cubic-bezier(.76,0,.21,1),
+               border-radius .86s cubic-bezier(.76,0,.21,1),
+               visibility 0s .86s!important;
   }
   #main-navigation.menu-overlay.is-open{
-    transition:transform .52s cubic-bezier(.76,0,.21,1),
-               border-radius .52s cubic-bezier(.76,0,.21,1),
+    transition:transform .86s cubic-bezier(.76,0,.21,1),
+               border-radius .86s cubic-bezier(.76,0,.21,1),
                visibility 0s 0s!important;
   }
 }
