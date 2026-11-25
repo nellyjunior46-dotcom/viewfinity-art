@@ -4260,7 +4260,32 @@ html,body{margin:0}
 #vf-view-visual-motions .vf179-title{margin-bottom:clamp(28px,4vw,55px);max-width:1400px}
 #vf-view-visual-motions .vf179-main{padding-top:clamp(150px,12vw,200px)}
 #vf-view-visual-motions .vf179-intro{border-top:1px solid rgba(202,218,111,.33);padding-top:clamp(32px,4vw,58px);margin-bottom:clamp(70px,8vw,115px)}
-.vfvm-title-first{white-space:nowrap}
+/* Restore the larger, premium editorial headline on desktop, while fitting the first line on small phones. */
+#vf-view-visual-motions .vf179-title{font-size:clamp(55px,8.4vw,132px);line-height:1.02;letter-spacing:-.075em;max-width:none}
+.vfvm-title-first{white-space:nowrap;display:inline-block;max-width:100%}
+.vfvm-category{padding-top:clamp(22px,3vw,44px)}
+.vfvm-category+.vfvm-category{border-top:1px solid #354234;padding-top:clamp(55px,6vw,104px)}
+.vfvm-category-top{display:flex;justify-content:space-between;align-items:end;gap:35px;margin:0 0 clamp(25px,3.6vw,55px)}
+.vfvm-category-copy{max-width:760px}
+.vfvm-category-index{font-size:11px;letter-spacing:.15em;color:#CADA6F;margin-bottom:clamp(12px,2vw,25px)}
+.vfvm-category-name{font-size:clamp(36px,5vw,82px);font-weight:530;line-height:1.08;letter-spacing:-.06em;color:#F4F6F0;margin:0 0 clamp(16px,2vw,25px)}
+.vfvm-category-description{color:#AAB6A5;line-height:1.7;font-size:clamp(15px,1.3vw,19px);max-width:650px}
+.vfvm-category-total{white-space:nowrap;color:#AAB6A5;font-size:11px;letter-spacing:.12em;padding-bottom:4px}
+.vfvm-category .vfvm-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:1080px}
+.vfvm-category.vfvm-expanded .vfvm-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
+.vfvm-category .vfvm-more-wrap{padding:clamp(36px,4vw,55px) 0 clamp(58px,7vw,100px)}
+.vfvm-more:disabled{cursor:default;opacity:.72}
+.vfvm-more:disabled:hover{background:#26321E}
+@media(max-width:900px){.vfvm-category.vfvm-expanded .vfvm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ #vf-view-visual-motions .vf179-title{font-size:clamp(32px,8.25vw,51px);line-height:1.08;max-width:100%}
+ #vf-view-visual-motions .vfvm-title{font-size:clamp(32px,8.25vw,51px)}
+ .vfvm-category-top{display:block}
+ .vfvm-category-total{display:block;margin-top:18px}
+ .vfvm-category .vfvm-grid,.vfvm-category.vfvm-expanded .vfvm-grid{grid-template-columns:1fr;max-width:none}
+ .vfvm-category-name{font-size:clamp(36px,10vw,52px)}
+}
+
 .vfvm-head{display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:1px solid #354234;padding:27px 0 38px;color:#C8D1BF;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 .vfvm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(15px,2.1vw,35px);row-gap:clamp(42px,4.4vw,75px);align-items:start}
 .vfvm-card{min-width:0;position:relative}
@@ -4288,10 +4313,10 @@ html,body{margin:0}
 .vfvm-more span{color:#B9C89A;margin-left:10px}
 @media(max-width:900px){.vfvm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){
- #vf-view-visual-motions .vfvm-title{font-size:clamp(26px,7.6vw,48px)}
+
  #vf-view-visual-motions .vf179-main{padding-top:145px}
  #vf-view-visual-motions .vf179-intro{grid-template-columns:1fr;gap:22px;padding-top:30px}
- #vf-view-visual-motions .vf179-title{font-size:clamp(26px,7.6vw,48px)}
+
  .vfvm-grid{grid-template-columns:1fr;row-gap:40px}
  .vfvm-head{padding:22px 0 26px}
  .vfvm-more-wrap{padding:45px 0 90px}
@@ -4426,10 +4451,22 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <main class="vf179-main"><div class="shell vf179-content">
 <h1 class="vf179-title vfvm-title"><span class="vfvm-title-first">Visuals and motions</span><br/><em>made by us.</em></h1>
 <div class="vf179-intro"><p>Stories brought to life through movement and visual rhythm.</p><p>Our visual work brings ideas into motion through editing and thoughtful storytelling. Explore selected projects and watch finished work frame by frame.</p></div>
-<div class="vfvm-head"><span>Selected visuals and motion works</span><span id="vfvm-count">01 — 02</span></div>
-<div class="vfvm-grid" id="vfvm-gallery"><article class="vfvm-card"><div class="vfvm-media" data-vfvm-video="94FPxO3k_t4"><button type="button" class="vfvm-poster" aria-label="Play Visual & Motion / Film 01"><img src="https://i.ytimg.com/vi/94FPxO3k_t4/oar2.jpg" alt="Visual & Motion / Film 01 video thumbnail" loading="lazy" decoding="async" width="480" height="360" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>01 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article>
-<article class="vfvm-card"><div class="vfvm-media" data-vfvm-video="mKQvidVEYtU"><button type="button" class="vfvm-poster" aria-label="Play Visual & Motion / Film 02"><img src="https://i.ytimg.com/vi/mKQvidVEYtU/oar2.jpg" alt="Visual & Motion / Film 02 video thumbnail" loading="lazy" decoding="async" width="480" height="360" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>02 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article></div>
-<div class="vfvm-more-wrap"><button type="button" class="vfvm-more" id="vfvm-more" hidden>View more films <span id="vfvm-more-count"></span></button></div>
+<div class="vfvm-head"><span>Selected visuals and motion works</span><span>01 — 03</span></div>
+<section class="vfvm-category" aria-labelledby="vfvm-ads-title" data-vfvm-category="ads">
+<div class="vfvm-category-top"><div class="vfvm-category-copy"><p class="vfvm-category-index">01 / FEATURED CATEGORY</p><h2 id="vfvm-ads-title" class="vfvm-category-name">Video Ads</h2><p class="vfvm-category-description">Purpose-driven video ads created for our clients to capture attention, communicate value, and inspire action.</p></div><span class="vfvm-category-total">02 PROJECTS</span></div>
+<div class="vfvm-grid"><article class="vfvm-card"><div class="vfvm-media" data-vfvm-video="94FPxO3k_t4"><button type="button" class="vfvm-poster" aria-label="Play video ad 01"><img src="https://i.ytimg.com/vi/94FPxO3k_t4/oar2.jpg" alt="Selected video ad 01 thumbnail" loading="lazy" decoding="async" width="720" height="1280" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>01 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article>
+<article class="vfvm-card"><div class="vfvm-media" data-vfvm-video="mKQvidVEYtU"><button type="button" class="vfvm-poster" aria-label="Play video ad 02"><img src="https://i.ytimg.com/vi/mKQvidVEYtU/oar2.jpg" alt="Selected video ad 02 thumbnail" loading="lazy" decoding="async" width="720" height="1280" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>02 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article></div>
+<div class="vfvm-more-wrap"><button type="button" class="vfvm-more" aria-controls="vfvm-ads-title">Load More <span class="vfvm-more-count"></span></button></div>
+</section>
+<section class="vfvm-category" aria-labelledby="vfvm-social-title" data-vfvm-category="social">
+<div class="vfvm-category-top"><div class="vfvm-category-copy"><p class="vfvm-category-index">02 / FEATURED CATEGORY</p><h2 id="vfvm-social-title" class="vfvm-category-name">Social Media Content</h2><p class="vfvm-category-description">Short-form content built for social platforms, combining engaging edits and visual storytelling to connect with audiences.</p></div><span class="vfvm-category-total">01 PROJECT</span></div>
+<div class="vfvm-grid"><article class="vfvm-card">
+<div class="vfvm-media" data-vfvm-video="D8NNStM5Vsg"><button type="button" class="vfvm-poster" aria-label="Play Social media content 01">
+<img src="https://i.ytimg.com/vi/D8NNStM5Vsg/oar2.jpg" alt="Social media content 01 video thumbnail" loading="lazy" decoding="async" width="720" height="1280" referrerpolicy="no-referrer"/>
+<span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div>
+<div class="vfvm-meta"><span>01 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article></div>
+<div class="vfvm-more-wrap"><button type="button" class="vfvm-more" aria-controls="vfvm-social-title">Load More <span class="vfvm-more-count"></span></button></div>
+</section>
 </div></main>
 <footer aria-label="VIEWFINITY copyright and location" class="vf252-min-footer"><span class="vf252-copyright">© 2026 VIEWFINITY</span><span class="vf252-location">DAR ES SALAAM, TANZANIA</span></footer>
 </div><div class="vf-route vf-route-sub vf179-route" data-vf-route="graphic-design" hidden="" id="vf-view-graphic-design">
@@ -6375,11 +6412,23 @@ render();
  });
  // Stop audio/video on route changes. The poster is restored for the next visitor.
  new MutationObserver(()=>{if(page.hidden)stopAll(null)}).observe(page,{attributes:true,attributeFilter:['hidden']});
- const cards=[...page.querySelectorAll('.vfvm-card')],more=page.querySelector('#vfvm-more');
- let visible=6;
- cards.forEach((card,i)=>card.hidden=i>=visible);
- if(cards.length>visible){more.hidden=false;page.querySelector('#vfvm-more-count').textContent='('+String(cards.length-visible)+' remaining)'}
- more?.addEventListener('click',()=>{visible+=6;cards.forEach((card,i)=>card.hidden=i>=visible);more.hidden=visible>=cards.length;if(!more.hidden)page.querySelector('#vfvm-more-count').textContent='('+String(cards.length-visible)+' remaining)'});
+ // Independent category-level reveal; never load a YouTube iframe until Play is clicked.
+ page.querySelectorAll('[data-vfvm-category]').forEach(category=>{
+   const cards=[...category.querySelectorAll('.vfvm-card')];
+   const more=category.querySelector('.vfvm-more');
+   const moreCount=category.querySelector('.vfvm-more-count');
+   let visible=2;
+   const render=()=>{
+     cards.forEach((card,i)=>{card.hidden=i>=visible;});
+     category.classList.toggle('vfvm-expanded',visible>2);
+     const remaining=Math.max(0,cards.length-visible);
+     more.disabled=remaining===0;
+     moreCount.textContent=remaining? '('+remaining+' remaining)':'(More coming soon)';
+     more.setAttribute('aria-label',remaining?'Load '+Math.min(2,remaining)+' more videos in this category':'No more videos yet in this category');
+   };
+   more.addEventListener('click',()=>{if(visible>=cards.length)return;visible=Math.min(visible+2,cards.length);render();});
+   render();
+ });
 })();
 </script><a aria-hidden="true" href="#/graphic-design" id="vf179-go" style="display:none" tabindex="-1">Graphic Design</a><script id="vf179-design-gallery-script">(()=>{'use strict';
 const gallery=document.querySelector('#vf-view-graphic-design');if(!gallery)return;
