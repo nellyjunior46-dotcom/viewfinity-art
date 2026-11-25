@@ -4634,11 +4634,11 @@ body.is-entered #vf-view-home{transform:scale(1);}
 </div><div class="vf-route vf-route-sub" hidden="" id="vf-view-store">
 <main>
 <section aria-labelledby="vfs-store-title" class="vfs-hero vfs-shell">
-<h1 class="vfs-title" id="vfs-store-title"><span>We value your creative <span class="vfs-accent">process.</span></span></h1>
+<h1 class="vfs-title" id="vfs-store-title"><span class="vfs-title-line">We value your</span><span class="vfs-title-line">creative <span class="vfs-accent">process.</span></span></h1>
 <div aria-hidden="true" class="vfs-rule"></div>
 <div class="vfs-intro"><p>Explore our creative assets.</p><span class="vfs-eyebrow">VIEWFINITY / ASSET STORE<br/>01 ASSET AVAILABLE</span></div>
 </section>
-<section class="vfs-section"><div class="vfs-shell"><div class="vfs-section-top"><div><span class="vfs-eyebrow">COLLECTION / 01</span><h2>Sound Effects<span class="vfs-accent">.</span></h2></div><p class="vfs-section-descr">Carefully considered sonic moments for interfaces, edits, transitions and storytelling.</p></div><div class="vfs-cards"><a aria-label="Explore UI Sound Effects" class="vfs-card" href="#/asset/ui-sound-effects"><div class="vfs-art a" data-art="ui" data-vf-bundle="ui-sound-effects"><img class="vf164-bundle-image vf254-priority-cover" src="assets/media/94e2fe45dd56e9e418.webp" width="640" height="710" alt="VIEWFINITY UI Sound Effects pack cover" loading="eager" decoding="async" fetchpriority="auto"/><span class="vf254-cover-fallback" aria-hidden="true">VIEWFINITY<br/>UI SOUND EFFECTS</span><span class="vfs-art-tag">VIEWFINITY® / SOUND EFFECTS</span><span aria-hidden="true" class="vfs-art-mark"><b>US</b></span><span class="vfs-art-bottom">DIGITAL COLLECTION / 01</span><span aria-label="Free download" class="vfs-price-badge is-free">FREE</span></div><div class="vfs-card-info"><div><h3>UI Sound Effects</h3><p>The sound of every interaction.</p></div><span class="vfs-card-count">29 sounds</span></div></a></div></div></section><footer aria-label="VIEWFINITY copyright and location" class="vf252-min-footer"><span class="vf252-copyright">© 2026 VIEWFINITY</span><span class="vf252-location">DAR ES SALAAM, TANZANIA</span></footer>
+<section class="vfs-section"><div class="vfs-shell"><div class="vfs-section-top"><div><h2>Sound Effects<span class="vfs-accent">.</span></h2></div></div><div class="vfs-cards"><a aria-label="Explore UI Sound Effects" class="vfs-card" href="#/asset/ui-sound-effects"><div class="vfs-art a" data-art="ui" data-vf-bundle="ui-sound-effects"><img class="vf164-bundle-image vf254-priority-cover" src="assets/media/94e2fe45dd56e9e418.webp" width="640" height="710" alt="VIEWFINITY UI Sound Effects pack cover" loading="eager" decoding="async" fetchpriority="auto"/><span class="vf254-cover-fallback" aria-hidden="true">VIEWFINITY<br/>UI SOUND EFFECTS</span><span class="vfs-art-tag">VIEWFINITY® / SOUND EFFECTS</span><span aria-hidden="true" class="vfs-art-mark"><b>US</b></span><span class="vfs-art-bottom">DIGITAL COLLECTION / 01</span><span aria-label="Free download" class="vfs-price-badge is-free">FREE</span></div><div class="vfs-card-info"><div><h3>UI Sound Effects</h3></div><span class="vfs-card-count">29 sounds</span></div></a></div></div></section><footer aria-label="VIEWFINITY copyright and location" class="vf252-min-footer"><span class="vf252-copyright">© 2026 VIEWFINITY</span><span class="vf252-location">DAR ES SALAAM, TANZANIA</span></footer>
 </main></div>
 <div class="vf-route vf-route-sub" hidden="" id="vf-view-asset">
 <main>
@@ -8238,5 +8238,26 @@ else init();
   #vf-view-store .vfs-title{font-size:clamp(53px,12.6vw,78px)!important;}
   #vf-view-store .vfs-section h2{font-size:clamp(28px,7.7vw,38px)!important;}
 }
+</style>
+
+<style id="vf268-store-two-lines-minimal">
+/* Asset Store hierarchy only: two deliberate lines on every screen size,
+   with enough horizontal space to avoid a third line on compact phones. */
+#vf-view-store .vfs-title > .vfs-title-line{
+  display:block!important;
+  white-space:nowrap!important;
+}
+@media(max-width:600px){
+  #vf-view-store .vfs-title{
+    font-size:clamp(28px,11vw,66px)!important;
+    letter-spacing:-.075em!important;
+  }
+  #vf-view-store .vfs-section h2{
+    font-size:clamp(24px,6.8vw,36px)!important;
+  }
+}
+/* Without a collection description, lead directly from title to pack artwork. */
+#vf-view-store .vfs-section-top{margin-bottom:clamp(18px,2.4vw,32px);}
+#vf-view-store .vfs-section-top h2{margin-top:0;}
 </style>
 </body></html>
