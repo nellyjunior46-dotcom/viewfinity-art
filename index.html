@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY® — Interactive Studio &amp; About</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><link id="vf261-mobile-about-hero-preload" rel="preload" as="image" href="assets/media/fb8fa8d74cfc476172-v254.webp" media="(max-width:760px)" fetchpriority="high"/>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#070B08" name="theme-color"/><meta content="Viewfinity — a creative ecosystem for filmmaking, motion, visual resources and color." name="description"/><title>VIEWFINITY®</title><link href="assets/media/be5f484c23a19e9923.png" rel="icon" sizes="512x512" type="image/png"/><link href="assets/media/be5f484c23a19e9923.png" rel="apple-touch-icon"/><link id="vf261-mobile-about-hero-preload" rel="preload" as="image" href="assets/media/fb8fa8d74cfc476172-v254.webp" media="(max-width:760px)" fetchpriority="high"/>
 <style id="vf255-menu-first-paint-fix">
 /* V2.55: do not show the floating MENU button on top of the unscrolled Home hero.
    Critical CSS runs from first paint, before the routing and scroll controllers initialize. */
@@ -4847,7 +4847,7 @@ $('#image-file').addEventListener('change',async e=>{const file=e.target.files?.
    [...new Set(Object.values(views))].forEach(view=>{view.hidden=view!==views[next]});
    current=next;
    document.body.dataset.vfPage=next;
-   document.title=(next==='home'?'VIEWFINITY® — A Creative Ecosystem':pages[next]+' — VIEWFINITY®');
+   document.title='VIEWFINITY®';
    window.scrollTo({top:0,left:0,behavior:'instant'});
    // Leave the desktop navigation available and ensure menu drawer does not stay over destination.
    const toggle=document.getElementById('menu-toggle');
