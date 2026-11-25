@@ -4647,7 +4647,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <section class="vfs-download"><div class="vfs-shell"><div class="vfs-download-top"><div><span class="vfs-eyebrow" id="vfs-detail-badge"></span><h2 id="vfs-detail-download-title"></h2><p id="vfs-detail-download-copy"></p></div><button class="vfs-download-btn" id="vfs-start-download" type="button">Get asset</button></div></div></section>
 </main><footer aria-label="VIEWFINITY copyright and location" class="vf252-min-footer"><span class="vf252-copyright">© 2026 VIEWFINITY</span><span class="vf252-location">DAR ES SALAAM, TANZANIA</span></footer>
 </div>
-<dialog aria-labelledby="vfs-support-title" class="vfs-support" id="vfs-support"><div class="vfs-support-header"><span class="vfs-support-label">VIEWFINITY / UNLOCK THE FREE PACK</span><button aria-label="Close download prompt" class="vfs-support-close" id="vfs-support-close" type="button">×</button></div><h2 id="vfs-support-title">Unlock your free pack.</h2><p id="vfs-support-copy">Follow @nelson.kr on Instagram to access the free UI Sound Effects collection. Your support helps keep creative resources free.</p><div class="vfs-support-actions"><a class="vfs-follow" id="vfs-follow" href="https://www.instagram.com/nelson.kr/" target="_blank" rel="noopener noreferrer">Follow @nelson.kr ↗</a><a class="vfs-continue" id="vfs-continue" href="https://drive.google.com/drive/folders/1TDSY0XQ9wMJEiUkUlaqL_M8R6dMhPAcZ?usp=sharing" target="_blank" rel="noopener noreferrer" hidden>Continue to download ↗</a></div><span class="vfs-support-hint" id="vfs-support-hint">Instagram opens separately. Return to this page after following to continue.</span><p aria-live="polite" class="vfs-support-status" id="vfs-support-status" role="status"></p></dialog>
+<dialog aria-labelledby="vfs-support-title" class="vfs-support" id="vfs-support"><div class="vfs-support-header"><span class="vfs-support-label">VIEWFINITY / UNLOCK THE FREE PACK</span><button aria-label="Close download prompt" class="vfs-support-close" id="vfs-support-close" type="button">×</button></div><h2 id="vfs-support-title">Unlock your free pack.</h2><p id="vfs-support-copy">Follow @nelson.kr on Instagram to access the free UI Sound Effects collection. Your support helps keep creative resources free.</p><div class="vfs-support-actions"><a class="vfs-follow" id="vfs-follow" href="https://www.instagram.com/nelson.kr/" target="_blank" rel="noopener noreferrer">Follow @nelson.kr ↗</a><a class="vfs-continue" id="vfs-continue" href="https://drive.google.com/drive/folders/1TDSY0XQ9wMJEiUkUlaqL_M8R6dMhPAcZ?usp=sharing" target="_blank" rel="noopener noreferrer" hidden>Download Now ↗</a></div><span class="vfs-support-hint" id="vfs-support-hint">Instagram opens separately. Return to this page after following to continue.</span><p aria-live="polite" class="vfs-support-status" id="vfs-support-status" role="status"></p></dialog>
 <div class="vf-route vf-route-sub" hidden="" id="vf-view-checkout">
 <main>
 <header class="vfc-head vfc-shell">
@@ -5700,12 +5700,27 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers
  };
  const dialog=el('vfs-support'),status=el('vfs-support-status'),continueBtn=el('vfs-continue'),follow=el('vfs-follow');
  const heading=el('vfs-support-title'),copy=el('vfs-support-copy'),hint=el('vfs-support-hint');
+ const followKey=()=> 'vf-free-pack-follow-clicked:'+active.slug;
+ const previouslyFollowed=()=>{
+  try{return sessionStorage.getItem(followKey())==='yes';}catch(_){return false;}
+ };
+ const showDownloadState=()=>{
+  heading.textContent='Thank you for following! 💚';
+  copy.textContent='Your free '+active.title+' pack is ready.';
+  hint.textContent='';
+  status.textContent='';
+  follow.hidden=true;
+  continueBtn.textContent='Download Now ↗';
+  continueBtn.href=active.driveUrl||'#';
+  continueBtn.hidden=false;
+ };
  const resetPrompt=()=>{
   heading.textContent='Unlock your free pack.';
   copy.textContent='Follow @nelson.kr on Instagram to access the free UI Sound Effects collection. Your support helps keep creative resources free.';
   hint.textContent='Instagram opens separately. Return to this page after following to continue.';
   status.textContent='';
   continueBtn.hidden=true;continueBtn.href=active.driveUrl||'#';follow.hidden=false;
+  if(active.driveUrl&&previouslyFollowed())showDownloadState();
  };
  el('vfs-start-download').addEventListener('click',()=>{
   if(active.price!=='Free'){window.vfCurrentCheckoutSlug=active.slug;location.hash='#/checkout/'+active.slug;return;}
@@ -5717,11 +5732,8 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers
  dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
  follow.addEventListener('click',()=>{
   if(!active.driveUrl)return;
-  continueBtn.hidden=false;
-  heading.textContent='Thank you for following! 💚';
-  copy.textContent='Your free UI Sound Effects pack is ready. Tap Continue to open all 29 MP3 files on Google Drive.';
-  hint.textContent='Instagram does not share follow status with this website, so this step works on trust.';
-  status.textContent='Continue to download is now available.';
+  try{sessionStorage.setItem(followKey(),'yes');}catch(_){}
+  showDownloadState();
  });
  continueBtn.addEventListener('click',e=>{if(continueBtn.hidden||!active.driveUrl){e.preventDefault();return;}dialog.close()});
  if(location.hash.startsWith('#/asset/'))window.vfStoreRenderPack(location.hash.split('/')[2]);
@@ -8377,6 +8389,17 @@ else init();
   #vf-view-asset .vfs-download-top h2{
     font-size:clamp(28px,7.4vw,38px);
   }
+}
+</style>
+
+<style id="vf270-follow-download-single-cta">
+/* On return from Instagram, the only action is a clear brand-primary Download Now.
+   Hidden actions stay hidden; no change to other store or package components. */
+#vfs-support .vfs-continue:not([hidden]){
+  background:#CADA6F;
+  border-color:#CADA6F;
+  color:#10170C;
+  font-weight:650;
 }
 </style>
 </body></html>
