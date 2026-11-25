@@ -4323,7 +4323,17 @@ html,body{margin:0}
 }
 @media(prefers-reduced-motion:reduce){.vfvm-poster>img,.vfvm-play-icon{transition:none}}
 </style>
-</head>
+<style id="vf-contact-only-patch">
+#vf-view-contact .vf-contact-hint{font-size:12px;line-height:1.5;color:#9dab96;letter-spacing:0}
+#vf-view-contact .vf-contact-channel-list{gap:16px!important}
+#vf-view-contact .vf-contact-link{display:inline-flex!important;align-items:center;gap:12px;text-decoration:none!important;color:#F4F6F0!important;overflow-wrap:anywhere;max-width:100%;line-height:1.5}
+#vf-view-contact .vf-contact-link svg{width:21px;height:21px;flex:0 0 21px;color:#CADA6F}
+#vf-view-contact .vf-contact-link span{min-width:0}
+#vf-view-contact .vf-contact-link:hover{color:#CADA6F!important}
+#vf-view-contact .vf-contact-socials{gap:14px!important}
+#vf-view-contact .vf-contact-socials a{font-size:clamp(16px,1.33vw,20px);font-weight:360;letter-spacing:-.015em}
+#vf-view-contact .vf-contact-link:focus-visible{outline:2px solid #CADA6F;outline-offset:5px}
+</style></head>
 <body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
 /* V2.02 — flipped mountain hero, stronger text overlay, scale reveal on home */
@@ -4540,7 +4550,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <p class="vf125-form-intro">Have something in mind? <span>Tell us a little about your project and we'll take it from there.</span></p>
 <form class="vf125-form" id="vf125-project-form" novalidate="">
 <div class="vf125-field"><div class="vf125-field-body"><label for="vf125-name">What's your name? <span>*</span></label><input autocomplete="name" id="vf125-name" maxlength="150" name="name" placeholder="Your name" required=""/></div></div>
-<div class="vf125-field"><div class="vf125-field-body"><label for="vf125-email">What's your email? <span>*</span></label><input autocomplete="email" id="vf125-email" maxlength="200" name="email" placeholder="you@example.com" required="" type="email"/></div></div>
+<div class="vf125-field"><div class="vf125-field-body"><label for="vf125-email">What's your email? <span>*</span></label><input autocomplete="email" id="vf125-email" maxlength="200" name="email" placeholder="you@example.com" required="" type="email"/></div></div><div class="vf125-field"><div class="vf125-field-body"><label for="vf125-whatsapp">What's your WhatsApp number? <span>*</span></label><input id="vf125-whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" maxlength="25" placeholder="+255 7XX XXX XXX" required aria-describedby="vf125-whatsapp-hint"/><small class="vf-contact-hint" id="vf125-whatsapp-hint">International code suggested automatically. You can change it.</small></div></div>
 <div class="vf125-field"><div class="vf125-field-body"><label for="vf125-company">What's the name of your organization?</label><input autocomplete="organization" id="vf125-company" maxlength="200" name="organization" placeholder="Company / brand name"/></div></div>
 <div class="vf125-field"><div class="vf125-field-body"><label for="vf125-services">What services are you looking for?</label><input id="vf125-services" maxlength="240" name="services" placeholder="Film, motion, branding, web design..."/></div></div>
 <div class="vf125-field vf125-field-last"><div class="vf125-field-body"><label for="vf125-message">Your message <span>*</span></label><textarea id="vf125-message" maxlength="6000" minlength="10" name="message" placeholder="Tell us about your idea, goals, and timeline..." required="" rows="4"></textarea></div></div>
@@ -4554,9 +4564,17 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <aside aria-label="Portrait and contact information" class="vf125-aside">
 <div class="vf125-portrait"><img width="1121" height="1403" alt="VIEWFINITY creative director holding a laptop, on a dark olive green studio background" decoding="async" loading="lazy" src="assets/media/dc7669164c8043f0dd.webp"/></div>
 <div class="vf125-sideinfo">
-<section><h2>Contact details</h2><p><a href="mailto:nellyjunior@viewfinity.art">nellyjunior@viewfinity.art</a><a href="tel:+255769615731">+255 769 615 731</a><a href="https://wa.me/255769155771" rel="noopener noreferrer" target="_blank">WhatsApp · +255 769 155 771</a></p></section>
-<section><h2>Business details</h2><p>P.O. Box 669<br/>Dar es Salaam, Tanzania</p></section>
-<section><h2>Socials</h2><div class="vf125-socials"><span class="vf253-unlinked-social" title="Profile URL not connected">Instagram</span><span class="vf253-unlinked-social" title="Profile URL not connected">Facebook</span><span class="vf253-unlinked-social" title="Profile URL not connected">TikTok</span></div></section>
+<section><h2>Contact details</h2><p class="vf-contact-channel-list">
+<a class="vf-contact-link" href="mailto:nelson@viewfinity.art"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>nelson@viewfinity.art</span></a>
+<a class="vf-contact-link" href="tel:+255769615771"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.6 19.6 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7 12.2 12.2 0 0 0 .7 2.9 2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5 12 12 0 0 0 2.8.7 2 2 0 0 1 1.7 2z"/></svg><span>+255 769 615 771</span></a>
+<a class="vf-contact-link" href="https://wa.me/255769155771" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20.4 3.7a10 10 0 0 0-16.4 11.5L2.6 21l6-1.3a10 10 0 1 0 11.8-16Z"/><path d="M8.2 7.3c-.5.2-.9 1.1-.8 1.7.2 2.6 3.2 5.5 5.9 5.9.9.1 2.4-.7 2.5-1.6 0-.4-.2-.5-.5-.7l-1.7-.8-.9 1c-.3.3-.5.3-.8.1-1.1-.5-2.1-1.4-2.8-2.5l.8-1.1c.1-.2.1-.4 0-.6l-.8-1.8c-.1-.2-.5-.2-.9-.1z"/></svg><span>WhatsApp · +255 769 155 771</span></a>
+<a class="vf-contact-link" href="https://www.google.com/maps/search/?api=1&amp;query=Dar%20es%20Salaam%2C%20Tanzania" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg><span>Dar es Salaam, Tanzania</span></a>
+</p></section>
+<section><h2>Socials</h2><div class="vf125-socials vf-contact-socials">
+<a class="vf-contact-link" href="https://www.instagram.com/nelson.kr/" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="18" cy="6.2" r="1" fill="currentColor" stroke="none"/></svg><span>Instagram · @nelson.kr</span></a>
+<a class="vf-contact-link" href="https://www.facebook.com/search/people/?q=Nelly%20Junior%20kr" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3.2l.8-4H14V7c0-.6.4-1 1-1h3z"/></svg><span>Facebook · Nelly Junior kr</span></a>
+<a class="vf-contact-link" href="https://www.tiktok.com/@nelson.kr" rel="noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M14 2h3.3c.3 2.8 2 4.7 4.4 5v3.4a9.6 9.6 0 0 1-4.4-1.5V16a7 7 0 1 1-7-7h.7v3.5A3.6 3.6 0 1 0 14 16z"/></svg><span>TikTok · @nelson.kr</span></a>
+</div></section>
 </div>
 </aside>
 </div>
@@ -5164,6 +5182,37 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers
 (()=>{
  const root=document.getElementById('vf-view-contact');if(!root)return;
  const form=root.querySelector('#vf125-project-form');const status=root.querySelector('#vf125-status');
+ const whatsapp=form.querySelector('#vf125-whatsapp');
+ let edited=false,started=false;
+ whatsapp.addEventListener('input',()=>{edited=true;whatsapp.removeAttribute('aria-invalid')});
+ const defaults={TZ:'255',US:'1',CA:'1',KE:'254',UG:'256',RW:'250',GB:'44',IE:'353',ZA:'27',NG:'234',GH:'233',DE:'49',FR:'33',IT:'39',ES:'34',NL:'31',IN:'91',PK:'92',BD:'880',AE:'971',SA:'966',AU:'61',NZ:'64',CN:'86',JP:'81',BR:'55',RU:'7',MX:'52',SG:'65',MY:'60',ID:'62',PH:'63',TR:'90',EG:'20',ET:'251',ZM:'260',ZW:'263',MW:'265',MZ:'258',BI:'257',CD:'243'};
+ const getRegion=()=>{
+   try{for(const x of navigator.languages||[navigator.language]){const region=new Intl.Locale(x).region;if(region&&defaults[region])return region;}}catch{}
+   try{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;return ({'Africa/Dar_es_Salaam':'TZ','Africa/Nairobi':'KE','Africa/Kampala':'UG','Europe/London':'GB'})[tz]||'TZ';}catch{return 'TZ'}
+ };
+ const applyCode=(code)=>{
+   const digits=String(code||'').replace(/\D/g,'');
+   if(!edited&&digits&&digits.length<=4)whatsapp.value='+'+digits+' ';
+ };
+ applyCode(defaults[getRegion()]||'255');
+ const detect=async()=>{
+   if(started)return;started=true;
+   // Country inferred from public IP, not browser GPS. Can be wrong when using a VPN.
+   for(const endpoint of ['https://ipapi.co/json/','https://ipwho.is/']){
+     const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),3500);
+     try{
+       const response=await fetch(endpoint,{signal:ctrl.signal});
+       if(!response.ok)continue;
+       const result=await response.json();
+       if(result.error||result.success===false)continue;
+       const code=result.country_calling_code||result.calling_code;
+       if(code){applyCode(code);break;}
+     }catch{}finally{clearTimeout(timeout)}
+   }
+ };
+ if(!root.hidden)detect();
+ new MutationObserver(()=>{if(!root.hidden)detect()}).observe(root,{attributes:true,attributeFilter:['hidden']});
+
  form.addEventListener('submit',(e)=>{
    e.preventDefault();
    for(const field of form.querySelectorAll('[required]')){
@@ -5175,9 +5224,14 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers
      }
      field.removeAttribute('aria-invalid');
    }
+   const phone=whatsapp.value.trim(),digits=phone.replace(/\D/g,'');
+   if(!/^\+\d[\d\s().-]*$/.test(phone)||digits.length<8||digits.length>15){
+     whatsapp.setAttribute('aria-invalid','true');
+     whatsapp.focus();status.textContent='Enter a valid WhatsApp number with its country code.';return;
+   }
    const d=new FormData(form);
-   const brief=`VIEWFINITY PROJECT ENQUIRY\n\nName: ${d.get('name')}\nEmail: ${d.get('email')}\nOrganization: ${d.get('organization')||'—'}\nServices: ${d.get('services')||'—'}\n\nProject details:\n${d.get('message')}`;
-   const url='mailto:nellyjunior@viewfinity.art?subject='+encodeURIComponent('VIEWFINITY — New project enquiry')+'&body='+encodeURIComponent(brief);
+   const brief=`VIEWFINITY PROJECT ENQUIRY\n\nName: ${d.get('name')}\nEmail: ${d.get('email')}\nWhatsApp: ${phone}\nOrganization: ${d.get('organization')||'—'}\nServices: ${d.get('services')||'—'}\n\nProject details:\n${d.get('message')}`;
+   const url='mailto:nelson@viewfinity.art?subject='+encodeURIComponent('VIEWFINITY — New project enquiry')+'&body='+encodeURIComponent(brief);
    status.textContent='Your email app will open with the enquiry. Press Send there to deliver it.';
    window.location.href=url;
  });
