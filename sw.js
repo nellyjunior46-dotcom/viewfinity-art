@@ -1,11 +1,12 @@
-/* VIEWFINITY lightweight offline fallback. Only the offline document is cached. */
-const VF_OFFLINE_CACHE='viewfinity-offline-v1';
+/* VIEWFINITY branded offline fallback (only the offline page and official logo are cached). */
+const VF_OFFLINE_CACHE='viewfinity-offline-v2';
 const VF_OFFLINE_PATH='/offline.html';
+const VF_OFFLINE_LOGO='/assets/media/c0b84cfe6d6fdbcf67.png';
 
 self.addEventListener('install',event=>{
  event.waitUntil(
   caches.open(VF_OFFLINE_CACHE)
-   .then(cache=>cache.add(new Request(VF_OFFLINE_PATH,{cache:'reload'})))
+   .then(cache=>cache.addAll([new Request(VF_OFFLINE_PATH,{cache:'reload'}),new Request(VF_OFFLINE_LOGO,{cache:'reload'})]))
    .then(()=>self.skipWaiting())
  );
 });
@@ -21,7 +22,13 @@ self.addEventListener('activate',event=>{
 
 self.addEventListener('fetch',event=>{
  const request=event.request;
- if(request.mode!=='navigate'||new URL(request.url).origin!==self.location.origin)return;
+ const url=new URL(request.url);
+ if(url.origin!==self.location.origin)return;
+ if(url.pathname===VF_OFFLINE_LOGO){
+  event.respondWith(caches.match(VF_OFFLINE_LOGO,{cacheName:VF_OFFLINE_CACHE}).then(cached=>cached||fetch(request)));
+  return;
+ }
+ if(request.mode!=='navigate')return;
  event.respondWith((async()=>{
   try{return await fetch(request)}
   catch{
