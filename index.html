@@ -4322,12 +4322,33 @@ html,body{margin:0}
  .vfvm-more-wrap{padding:45px 0 90px}
 }
 @media(prefers-reduced-motion:reduce){.vfvm-poster>img,.vfvm-play-icon{transition:none}}
-/* VIEWFINITY videos: retain six-up editorial grid and native aspect for software films. */
-#vf-view-visual-motions .vfvm-category .vfvm-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none}
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-grid{grid-template-columns:minmax(0,1fr);max-width:780px}
+/* VIEWFINITY Visuals & Motion: one video at a time, vertically stacked.
+   Two visible per category initially; Load More reveals two more.
+   Keep portrait and landscape players at their natural proportions. */
+#vf-view-visual-motions .vfvm-category .vfvm-grid,
+#vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-grid{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:clamp(32px,4.5vw,64px);
+  max-width:none;
+}
+#vf-view-visual-motions .vfvm-category .vfvm-grid > .vfvm-card{
+  width:100%;
+  max-width:460px;
+  flex:0 0 auto;
+}
+#vf-view-visual-motions .vfvm-category-landscape .vfvm-grid > .vfvm-card{
+  max-width:780px;
+}
 #vf-view-visual-motions .vfvm-media[data-vfvm-video-format="landscape"]{aspect-ratio:16/9}
-@media(max-width:900px){#vf-view-visual-motions .vfvm-category:not(.vfvm-category-landscape) .vfvm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){#vf-view-visual-motions .vfvm-category .vfvm-grid,#vf-view-visual-motions .vfvm-category-landscape .vfvm-grid{grid-template-columns:minmax(0,1fr);max-width:none}}
+#vf-view-visual-motions .vfvm-category .vfvm-more-wrap{
+  width:min(100%,460px);
+  justify-content:center;
+}
+#vf-view-visual-motions .vfvm-category-landscape .vfvm-more-wrap{
+  width:min(100%,780px);
+}
 </style>
 <!-- SOURCE LICENSE NOTICE (NOT DISPLAYED): Tabler Icons used on Contact page.
 MIT License. Copyright (c) 2020–2026 Paweł Kuna.
@@ -6558,7 +6579,7 @@ render();
    const cards=[...category.querySelectorAll('.vfvm-card')];
    const more=category.querySelector('.vfvm-more');
    const moreCount=category.querySelector('.vfvm-more-count');
-   let visible=6;
+   let visible=2;
    const render=()=>{
      cards.forEach((card,i)=>{card.hidden=i>=visible;});
      category.classList.toggle('vfvm-expanded',visible>2);
