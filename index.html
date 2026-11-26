@@ -4541,7 +4541,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <a class="vf242-top-link" href="#work">WORK</a>
 <a aria-label="VIEWFINITY homepage" class="vf242-mobile-brand" href="#/home"><img width="1048" height="144" alt="VIEWFINITY" decoding="async" src="assets/media/c0b84cfe6d6fdbcf67.png"/></a>
 <a class="vf242-top-link vf242-top-link-last page-link" data-transition-title="ABOUT" href="#/about">ABOUT</a>
-</div><div aria-hidden="true" class="vf208-parallax-frame"><picture class="vf261-hero-picture"><source media="(max-width:760px)" srcset="assets/media/fb8fa8d74cfc476172-v254.webp"/><img decoding="async" fetchpriority="high" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></picture></div>
+</div><div aria-hidden="true" class="vf208-parallax-frame"><picture class="vf261-hero-picture"><source media="(max-width:760px)" srcset="assets/media/fb8fa8d74cfc476172-v254.webp"/><img decoding="async" fetchpriority="high" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></picture><video class="vf272-hero-video" autoplay muted loop playsinline webkit-playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture><source data-src="assets/media/DIVA%20COMPRESSED.mp4" type="video/mp4"></video></div>
 <div class="shell hero-content"><div class="hero-stage"><img loading="lazy" decoding="async" width="1100" height="950" alt="" aria-hidden="true" class="hero-orb" src="assets/media/5724f2dab16e45d2cf.webp"/><h1 class="hero-title" id="hero-heading"><span class="hero-line"><span class="hero-line-inner">CREATING</span></span><span class="hero-line"><span class="hero-line-inner">BEYOND</span></span><span class="hero-line"><span class="hero-line-inner accent">LIMIT<span class="italic-cue">.</span></span></span></h1></div><p class="hero-manifesto">A space for bold thinkers<br/>and visual storytellers.</p></div><div aria-label="Studio introduction" class="vf242-mobile-caption">
 <div class="vf242-caption-left"><span>VIEWFINITY® STUDIO</span><strong>STORIES IN MOTION</strong></div>
 <div class="vf242-caption-right"><span>BASED IN TANZANIA</span><strong>WORKING GLOBALLY</strong></div>
@@ -8321,6 +8321,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
  var home=document.getElementById('vf-view-home');
  var hero=home&&home.querySelector('section.hero');
  var picture=hero&&hero.querySelector('.vf208-parallax-frame > picture.vf261-hero-picture');
+ var video=hero&&hero.querySelector('.vf208-parallax-frame > video.vf272-hero-video');
  if(!home||!hero||!picture||!window.matchMedia||!window.requestAnimationFrame)return;
  var mobile=matchMedia('(max-width:760px)');
  var reduced=matchMedia('(prefers-reduced-motion:reduce)');
@@ -8333,6 +8334,7 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
    lastValue=null;
    picture.style.removeProperty('transform');
    picture.style.removeProperty('--vf262-photo-shift');
+   if(video)video.style.removeProperty('transform');
  }
  function repaint(){
    raf=0;
@@ -8345,8 +8347,9 @@ body.is-entered #vf-view-home .hero .vf208-parallax-img { transform:scale(1.12);
    /* Fractional pixels keep tiny swipes fluid. Direct tracking removes the
       delayed easing tail that made the photo appear to bounce back on release. */
    if(lastValue===null||Math.abs(value-lastValue)>.001){
-     picture.style.setProperty('transform',
-       'translate3d(0,'+value.toFixed(3)+'px,0) scale(1.09)','important');
+     var motion='translate3d(0,'+value.toFixed(3)+'px,0) scale(1.09)';
+     picture.style.setProperty('transform',motion,'important');
+     if(video)video.style.setProperty('transform',motion,'important');
      lastValue=value;
    }
  }
@@ -8929,6 +8932,84 @@ else init();
   shown=true;observer?.disconnect();
   current=read();open(true);
  });
+})();
+</script>
+
+<!-- VIEWFINITY V2.72 — optimized 1.3 MB cinematic hero video, existing poster/parallax retained -->
+<style id="vf272-optimized-hero-video">
+#vf-view-home .hero .vf208-parallax-frame > video.vf272-hero-video{
+ display:block!important;
+ position:absolute!important;
+ inset:0!important;
+ width:100%!important;
+ height:100%!important;
+ object-fit:cover!important;
+ object-position:center center!important;
+ pointer-events:none!important;
+ z-index:2!important;
+ opacity:0!important;
+ transform:scale(1.065);
+ transform-origin:50% 50%!important;
+ transition:opacity .65s ease!important;
+ background:transparent!important;
+}
+#vf-view-home .hero.vf272-video-playing .vf208-parallax-frame > video.vf272-hero-video{
+ opacity:1!important;
+}
+@media(max-width:760px){
+ html body #vf-view-home .hero .vf208-parallax-frame > video.vf272-hero-video{
+  transform:translate3d(0,0,0) scale(1.09)!important;
+  will-change:transform!important;
+ }
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+ html body #vf-view-home .hero .vf208-parallax-frame > video.vf272-hero-video{
+  transform:scale(1.09)!important;
+  will-change:auto!important;
+ }
+}
+</style>
+<script id="vf272-optimized-hero-video-script">
+(()=>{
+ 'use strict';
+ const home=document.getElementById('vf-view-home');
+ const hero=home?.querySelector('section.hero');
+ const video=hero?.querySelector('video.vf272-hero-video');
+ const source=video?.querySelector('source[data-src]');
+ if(!home||!hero||!video||!source)return;
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+ let loaded=false;
+ let revealing=false;
+ const visible=()=>!home.hidden&&document.visibilityState!=='hidden'&&!reduced.matches;
+ const reveal=()=>{
+  if(revealing)return;
+  revealing=true;
+  const show=()=>{if(visible()&&!video.paused)hero.classList.add('vf272-video-playing');};
+  if(typeof video.requestVideoFrameCallback==='function')video.requestVideoFrameCallback(show);
+  else requestAnimationFrame(()=>requestAnimationFrame(show));
+ };
+ const sync=()=>{
+  if(!visible()){
+   video.pause();
+   if(reduced.matches)hero.classList.remove('vf272-video-playing');
+   return;
+  }
+  if(!loaded){
+   loaded=true;
+   source.src=source.dataset.src;
+   video.load();
+  }
+  const playing=video.play();
+  if(playing&&typeof playing.catch==='function')playing.catch(()=>{/* Poster remains visible if autoplay is blocked. */});
+ };
+ video.addEventListener('playing',reveal);
+ video.addEventListener('error',()=>hero.classList.remove('vf272-video-playing'));
+ document.addEventListener('visibilitychange',sync,{passive:true});
+ new MutationObserver(sync).observe(home,{attributes:true,attributeFilter:['hidden']});
+ if(reduced.addEventListener)reduced.addEventListener('change',sync);
+ else if(reduced.addListener)reduced.addListener(sync);
+ // Let the lightweight, high-priority hero picture paint first; then fetch video.
+ requestAnimationFrame(()=>requestAnimationFrame(sync));
 })();
 </script>
 </body></html>
