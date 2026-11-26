@@ -9140,7 +9140,7 @@ body.vf-offline-active{overflow:hidden!important}
  <footer class="vf-offline-tagline"><span>CRE<b>8</b>TING BEYOND LIMITS</span></footer>
 </div>
 </div>
-<script id="vf275-offline-controller">
+<script id="vf276-offline-reconnect-controller">
 (()=>{
  'use strict';
  const root=document.getElementById('vf-offline-overlay');
@@ -9151,6 +9151,8 @@ body.vf-offline-active{overflow:hidden!important}
  const defaultMessage='Looks like you’re offline. Check your connection and try again.';
  let previousFocus=null;
  let checking=false;
+ let verifiedOnlineUntil=0;
+ let recoveryTimer=null;
  let pendingDestination=null;
  let pendingLink=null;
 
@@ -9162,8 +9164,15 @@ body.vf-offline-active{overflow:hidden!important}
   root.hidden=false;
   document.body.classList.add('vf-offline-active');
   retryButton.focus({preventScroll:true});
+  // Only poll after somebody attempts to navigate while offline.
+  if(!recoveryTimer){
+   recoveryTimer=window.setInterval(()=>{
+    if(!root.hidden&&!document.hidden)retry(true);
+   },4500);
+  }
  }
  function hideOffline(){
+  if(recoveryTimer){clearInterval(recoveryTimer);recoveryTimer=null;}
   if(root.hidden)return;
   root.hidden=true;
   document.body.classList.remove('vf-offline-active');
@@ -9202,7 +9211,7 @@ body.vf-offline-active{overflow:hidden!important}
 
  // Also used by VIEWFINITY's internal SPA router and browser-history navigation.
  window.__vfOfflineNavigationAttempt=(href)=>{
-  if(navigator.onLine)return false;
+  if(navigator.onLine||Date.now()<verifiedOnlineUntil)return false;
   pendingDestination=href||pendingDestination;
   status.textContent=defaultMessage;
   showOffline();
@@ -9211,7 +9220,7 @@ body.vf-offline-active{overflow:hidden!important}
 
  // Capture before existing SPA click handlers; preserve current page untouched.
  window.addEventListener('click',event=>{
-  if(navigator.onLine||event.defaultPrevented||event.button!==0||
+  if(navigator.onLine||Date.now()<verifiedOnlineUntil||event.defaultPrevented||event.button!==0||
      event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   const link=event.target.closest?.('a[href]');
   if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;
@@ -9224,15 +9233,17 @@ body.vf-offline-active{overflow:hidden!important}
  },true);
 
  async function vfOfflineProbe(){
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),6000);
-  try{
-   const response=await fetch('/offline.html?vf-connectivity='+Date.now(),
-    {cache:'no-store',signal:controller.signal});
-   return response.ok;
-  }catch{return false}
-  finally{clearTimeout(timeout)}
- }
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9000);
+ try{
+  // A non-navigation request: the service worker never answers it from its
+  // offline cache. This establishes real connectivity to our own site.
+  const url='/sw.js?vf-connectivity='+Date.now()+'-'+Math.random().toString(36).slice(2);
+  const response=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:controller.signal});
+  return response.ok && (await response.text()).includes('const VF_OFFLINE_CACHE=');
+ }catch{return false}
+ finally{clearTimeout(timeout)}
+}
 
  function resumeNavigation(){
   const destination=pendingDestination;
@@ -9256,29 +9267,33 @@ body.vf-offline-active{overflow:hidden!important}
   }
  }
 
- async function retry(){
-  if(checking)return;
-  if(!navigator.onLine){
-   status.textContent='Still offline. Check your connection and try again.';
-   return;
-  }
+ async function retry(silent=false){
+  if(checking||root.hidden)return;
   checking=true;
-  retryButton.disabled=true;
-  status.textContent='Checking your connection…';
+  if(!silent){
+   retryButton.disabled=true;
+   status.textContent='Checking your connection…';
+  }
   let connected=false;
   try{connected=await vfOfflineProbe()}
   finally{checking=false;retryButton.disabled=false}
   if(connected){
+   // Some mobile browsers keep navigator.onLine=false for a moment even
+   // after a successful request. Trust the verified network response.
+   verifiedOnlineUntil=Date.now()+20000;
    hideOffline();
    resumeNavigation();
-  }else{
+  }else if(!silent){
    status.textContent='Still offline. Check your connection and try again.';
   }
  }
 
- retryButton.addEventListener('click',retry);
- // Reconnect only matters if a page navigation was previously attempted.
- window.addEventListener('online',()=>{if(!root.hidden)retry()});
+ retryButton.addEventListener('click',()=>retry(false));
+ window.addEventListener('online',()=>{if(!root.hidden)retry(true)});
+ window.addEventListener('focus',()=>{if(!root.hidden)retry(true)});
+ document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden&&!root.hidden)retry(true);
+ });
 
  // A real browser refresh while offline is handled by the separately cached
  // offline.html page in sw.js, rather than overlaying the current document.
