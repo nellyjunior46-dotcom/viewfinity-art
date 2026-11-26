@@ -4349,6 +4349,8 @@ html,body{margin:0}
 #vf-view-visual-motions .vfvm-category-landscape .vfvm-more-wrap{
   width:min(100%,780px);
 }
+/* The next category lands with its title and introduction comfortably in view. */
+#vf-view-visual-motions .vfvm-category-top{scroll-margin-top:clamp(28px,5vw,74px);}
 /* VIEWFINITY signature motion: expanding grid row with no JS frame-by-frame reflow.
    Slow initial acceleration, cushioned final deceleration, natural-size cards. */
 #vf-view-visual-motions .vfvm-category .vfvm-grid{
@@ -6654,6 +6656,27 @@ render();
      // Long galleries need longer travel time so they never expand at lightning speed.
      const duration=Math.min(3400,1850+extras.length*280);
      category.style.setProperty('--vfvm-reveal-duration',duration+'ms');
+     // Only Show Less navigates; a later section added to the page is picked up automatically.
+     // Wait until the shrinking row has finished, so the scroll lands on a stable heading.
+     let collapseVersion=0;
+     let scrollCompleted=false;
+     const isReducedMotion=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+     const scrollAfterCollapse=(version)=>{
+       if(version!==collapseVersion||expanded||scrollCompleted||page.hidden)return;
+       scrollCompleted=true;
+       let next=category.nextElementSibling;
+       while(next&&!next.matches('[data-vfvm-category]'))next=next.nextElementSibling;
+       if(!next)return;
+       const heading=next.querySelector('.vfvm-category-top')||next;
+       requestAnimationFrame(()=>{
+         if(version!==collapseVersion||expanded||page.hidden)return;
+         heading.scrollIntoView({behavior:isReducedMotion()?'instant':'smooth',block:'start'});
+       });
+     };
+     reveal.addEventListener('transitionend',event=>{
+       if(event.target!==reveal||event.propertyName!=='grid-template-rows'||expanded)return;
+       scrollAfterCollapse(collapseVersion);
+     });
      more.addEventListener('click',()=>{
        if(expanded){
          // Pause all extra videos before reversing, including when rapidly tapping.
@@ -6663,6 +6686,15 @@ render();
          });
        }
        expanded=!expanded;
+       collapseVersion+=1;
+       const version=collapseVersion;
+       scrollCompleted=false;
+       // Reduced-motion or browsers that skip transitionend still advance the visitor.
+       // The version check cancels old jumps when Load More reverses the collapse.
+       if(!expanded){
+         if(isReducedMotion())requestAnimationFrame(()=>scrollAfterCollapse(version));
+         else setTimeout(()=>scrollAfterCollapse(version),duration+160);
+       }
        reveal.inert=!expanded;
        reveal.setAttribute('aria-hidden',String(!expanded));
        category.classList.toggle('vfvm-expanded',expanded);
