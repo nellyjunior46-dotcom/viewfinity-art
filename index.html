@@ -9240,7 +9240,7 @@ body.vf-offline-active{overflow:hidden!important}
   // offline cache. This establishes real connectivity to our own site.
   const url='/sw.js?vf-connectivity='+Date.now()+'-'+Math.random().toString(36).slice(2);
   const response=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:controller.signal});
-  return response.ok && (await response.text()).includes('const VF_OFFLINE_CACHE=');
+  return response.ok; // A successful uncached same-origin network request confirms reachability.
  }catch{return false}
  finally{clearTimeout(timeout)}
 }
@@ -9288,7 +9288,26 @@ body.vf-offline-active{overflow:hidden!important}
   }
  }
 
- retryButton.addEventListener('click',()=>retry(false));
+ // Manual retry behaves like Chrome's own Refresh, with no custom probe gate.
+ // Keep the requested VIEWFINITY route in the URL when the interrupted link
+ // was a hash route; replaceState avoids triggering the SPA before reload.
+ function refreshFromButton(){
+  const requested=pendingDestination;
+  if(requested){
+   if(requested.startsWith('#')){
+    history.replaceState(history.state,'',location.pathname+location.search+requested);
+   }else{
+    let url;
+    try{url=new URL(requested,location.href)}catch{}
+    if(url&&url.origin===location.origin&&url.href!==location.href){
+     location.assign(url.href);
+     return;
+    }
+   }
+  }
+  location.reload();
+ }
+ retryButton.addEventListener('click',refreshFromButton);
  window.addEventListener('online',()=>{if(!root.hidden)retry(true)});
  window.addEventListener('focus',()=>{if(!root.hidden)retry(true)});
  document.addEventListener('visibilitychange',()=>{
