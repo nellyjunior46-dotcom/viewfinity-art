@@ -9135,7 +9135,7 @@ body.vf-offline-active{overflow:hidden!important}
   </div>
   <h1 class="vf-offline-heading"><span>No Internet</span><span class="vf-offline-accent">Connection</span></h1>
   <p class="vf-offline-description" id="vf-offline-message" role="status">Looks like you’re offline. Check your connection and try again.</p>
-  <button class="vf-offline-retry" type="button" id="vf-offline-retry">Try Again</button>
+  <a class="vf-offline-retry" id="vf-offline-retry" href="/?vf_retry=1">Try Again</a>
  </main>
  <footer class="vf-offline-tagline"><span>CRE<b>8</b>TING BEYOND LIMITS</span></footer>
 </div>
@@ -9214,6 +9214,7 @@ body.vf-offline-active{overflow:hidden!important}
   if(navigator.onLine||Date.now()<verifiedOnlineUntil)return false;
   pendingDestination=href||pendingDestination;
   status.textContent=defaultMessage;
+  updateRetryHref();
   showOffline();
   return true;
  };
@@ -9223,7 +9224,8 @@ body.vf-offline-active{overflow:hidden!important}
   if(navigator.onLine||Date.now()<verifiedOnlineUntil||event.defaultPrevented||event.button!==0||
      event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
   const link=event.target.closest?.('a[href]');
-  if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;
+  // Never intercept the offline Retry link: it must perform native navigation.
+  if(!link||link.id==='vf-offline-retry'||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;
   const href=link.getAttribute('href')?.trim();
   if(!isNewPage(href))return;
   event.preventDefault();
@@ -9288,26 +9290,27 @@ body.vf-offline-active{overflow:hidden!important}
   }
  }
 
- // Manual retry behaves like Chrome's own Refresh, with no custom probe gate.
- // Keep the requested VIEWFINITY route in the URL when the interrupted link
- // was a hash route; replaceState avoids triggering the SPA before reload.
- function refreshFromButton(){
-  const requested=pendingDestination;
-  if(requested){
-   if(requested.startsWith('#')){
-    history.replaceState(history.state,'',location.pathname+location.search+requested);
-   }else{
-    let url;
-    try{url=new URL(requested,location.href)}catch{}
-    if(url&&url.origin===location.origin&&url.href!==location.href){
-     location.assign(url.href);
-     return;
-    }
-   }
+ // Native link navigation is deliberate: it works even when mobile browsers
+ // fail to update navigator.onLine or a fetch-based retry is blocked.
+ // A unique query parameter also avoids returning a stale cached document.
+ function updateRetryHref(){
+  let url=new URL(location.href);
+  if(pendingDestination){
+   try{
+    const destination=new URL(pendingDestination,location.href);
+    if(destination.origin===location.origin)url=destination;
+   }catch{}
   }
-  location.reload();
+  url.searchParams.set('vf_retry',String(Date.now()));
+  retryButton.href=url.href;
  }
- retryButton.addEventListener('click',refreshFromButton);
+ // Keep VIEWFINITY's current route or the destination selected while offline.
+ // The service worker does network-first navigation and renders offline.html if
+ // the request truly fails. No click handler prevents the browser navigation.
+ retryButton.addEventListener('pointerdown',updateRetryHref,{passive:true});
+ retryButton.addEventListener('keydown',event=>{
+  if(event.key==='Enter')updateRetryHref();
+ });
  window.addEventListener('online',()=>{if(!root.hidden)retry(true)});
  window.addEventListener('focus',()=>{if(!root.hidden)retry(true)});
  document.addEventListener('visibilitychange',()=>{
