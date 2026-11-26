@@ -5144,6 +5144,16 @@ $('#image-file').addEventListener('change',async e=>{const file=e.target.files?.
  const showRoute=async(next,{push=true,anchor=''}={})=>{
    if(vfColorLabPending.has(next)){history.replaceState(history.state,'','#/home');next='home';anchor='';push=false;}
    if(!(next in views))return;
+   // Offline? Keep the current content readable; block attempted page changes.
+   // Refreshes are handled separately by the cached service-worker offline page.
+   if(next!==current&&!navigator.onLine){
+     const href=!push&&location.hash.startsWith('#/')
+       ?location.hash
+       :next==='asset'?'#/asset/'+packFromHash()
+       :next==='checkout'?'#/checkout/'+(window.vfCurrentCheckoutSlug||'')
+       :routeHash(next,anchor);
+     if(window.__vfOfflineNavigationAttempt?.(href))return;
+   }
    if(busy){
      // Rapid clicks and hashchange-driven checkout navigation must not disappear.
      queuedNavigation={next,options:{push,anchor},assetSlug:next==='asset'?packFromHash():null,
@@ -9137,20 +9147,14 @@ body.vf-offline-active{overflow:hidden!important}
  const retryButton=root?.querySelector('#vf-offline-retry');
  const status=root?.querySelector('#vf-offline-message');
  if(!root||!retryButton||!status)return;
+
  const defaultMessage='Looks like you’re offline. Check your connection and try again.';
  let previousFocus=null;
  let checking=false;
- 
-async function vfOfflineProbe(){
- const controller=new AbortController();
- const timeout=setTimeout(()=>controller.abort(),6000);
- try{
-  const result=await fetch('/offline.html?vf-connectivity='+Date.now(),{cache:'no-store',signal:controller.signal});
-  return result.ok;
- }catch{return false}
- finally{clearTimeout(timeout)}
-}
+ let pendingDestination=null;
 
+ // Do not cover the page simply because connectivity drops: visitors may
+ // still need to read or copy contact information they already have open.
  function showOffline(){
   if(!root.hidden)return;
   previousFocus=document.activeElement;
@@ -9163,36 +9167,111 @@ async function vfOfflineProbe(){
   root.hidden=true;
   document.body.classList.remove('vf-offline-active');
   status.textContent=defaultMessage;
-  if(previousFocus&&typeof previousFocus.focus==='function')previousFocus.focus({preventScroll:true});
+  if(previousFocus?.isConnected&&typeof previousFocus.focus==='function'){
+   previousFocus.focus({preventScroll:true});
+  }
   previousFocus=null;
  }
+
+ function currentPage(){
+  return document.body.dataset.vfPage||
+   (location.hash.match(/^#\/([^/]+)/)?.[1])||'home';
+ }
+ function isNewPage(href){
+  if(!href||/^(?:mailto:|tel:|sms:|javascript:)/i.test(href))return false;
+  if(href.startsWith('#/')){
+   const target=href.slice(2).split('/')[0];
+   const current=currentPage();
+   if(target!==current)return true;
+   // Subpages (e.g. individual assets) count as separate pages.
+   if(['asset','checkout','color','brand'].includes(target)){
+    return location.hash!==href;
+   }
+   return false;
+  }
+  // In VIEWFINITY, these homepage section links navigate back home when
+  // clicked from other routes, but merely scroll if home is already open.
+  if(href.startsWith('#'))return currentPage()!=='home';
+  let destination;
+  try{destination=new URL(href,document.baseURI)}catch{return false}
+  if(destination.origin!==location.origin)return false;
+  if(destination.pathname!==location.pathname||destination.search!==location.search)return true;
+  return isNewPage(destination.hash);
+ }
+
+ // Also used by VIEWFINITY's internal SPA router and browser-history navigation.
+ window.__vfOfflineNavigationAttempt=(href)=>{
+  if(navigator.onLine)return false;
+  pendingDestination=href||pendingDestination;
+  status.textContent=defaultMessage;
+  showOffline();
+  return true;
+ };
+
+ // Capture before existing SPA click handlers; preserve current page untouched.
+ window.addEventListener('click',event=>{
+  if(navigator.onLine||event.defaultPrevented||event.button!==0||
+     event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const link=event.target.closest?.('a[href]');
+  if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;
+  const href=link.getAttribute('href')?.trim();
+  if(!isNewPage(href))return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  window.__vfOfflineNavigationAttempt(href);
+ },true);
+
+ async function vfOfflineProbe(){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),6000);
+  try{
+   const response=await fetch('/offline.html?vf-connectivity='+Date.now(),
+    {cache:'no-store',signal:controller.signal});
+   return response.ok;
+  }catch{return false}
+  finally{clearTimeout(timeout)}
+ }
+
+ function resumeNavigation(){
+  const destination=pendingDestination;
+  pendingDestination=null;
+  if(!destination)return;
+  if(destination.startsWith('#')){
+   // If a browser history action already changed the URL while offline,
+   // re-run VIEWFINITY's route restoration after connection resumes.
+   if(location.hash===destination)window.dispatchEvent(new Event('hashchange'));
+   else location.hash=destination;
+  }else{
+   location.assign(destination);
+  }
+ }
+
  async function retry(){
   if(checking)return;
   if(!navigator.onLine){
-   showOffline();
    status.textContent='Still offline. Check your connection and try again.';
    return;
   }
   checking=true;
   retryButton.disabled=true;
   status.textContent='Checking your connection…';
-  try{
-   if(await vfOfflineProbe())hideOffline();
-   else{
-    showOffline();
-    status.textContent='Still offline. Check your connection and try again.';
-   }
-  }finally{checking=false;retryButton.disabled=false}
+  let connected=false;
+  try{connected=await vfOfflineProbe()}
+  finally{checking=false;retryButton.disabled=false}
+  if(connected){
+   hideOffline();
+   resumeNavigation();
+  }else{
+   status.textContent='Still offline. Check your connection and try again.';
+  }
  }
+
  retryButton.addEventListener('click',retry);
- window.addEventListener('offline',()=>{
-  status.textContent=defaultMessage;
-  showOffline();
- });
+ // Reconnect only matters if a page navigation was previously attempted.
  window.addEventListener('online',()=>{if(!root.hidden)retry()});
- window.addEventListener('pageshow',()=>{if(!navigator.onLine)showOffline()});
- document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!navigator.onLine)showOffline()});
- if(!navigator.onLine)showOffline();
+
+ // A real browser refresh while offline is handled by the separately cached
+ // offline.html page in sw.js, rather than overlaying the current document.
  if('serviceWorker' in navigator){
   const register=()=>navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
   if(document.readyState==='complete')register();
