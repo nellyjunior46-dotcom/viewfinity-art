@@ -105,7 +105,7 @@ body.vf-offline-active{overflow:hidden!important}
   // offline cache. This establishes real connectivity to our own site.
   const url='/sw.js?vf-connectivity='+Date.now()+'-'+Math.random().toString(36).slice(2);
   const response=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:controller.signal});
-  return response.ok && (await response.text()).includes('const VF_OFFLINE_CACHE=');
+  return response.ok; // A successful uncached same-origin network request confirms reachability.
  }catch{return false}
  finally{clearTimeout(timeout)}
 }
@@ -124,13 +124,21 @@ body.vf-offline-active{overflow:hidden!important}
   if(online){
    recovered=true;
    message.textContent='Connection restored. Taking you back…';
-   const url=location.pathname==='/offline.html'?'/':location.href;
-   location.replace(url);
+   if(location.pathname.endsWith('/offline.html')){
+    location.replace('/');
+   }else{
+    location.reload();
+   }
    return;
   }
   if(manual)message.textContent='Still offline. Check your connection and try again.';
  }
- button.addEventListener('click',()=>checkConnection(true));
+ // A real browser reload is more reliable on mobile than gating the button
+ // on a separate fetch. The service worker still serves this screen offline.
+ button.addEventListener('click',()=>{
+  if(location.pathname.endsWith('/offline.html'))location.replace('/');
+  else location.reload();
+ });
  // Some mobile browsers miss the online event after switching Wi-Fi back on.
  // Poll only while this offline page is visible, not during normal site browsing.
  window.addEventListener('online',()=>checkConnection());
