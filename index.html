@@ -6669,39 +6669,51 @@ render();
      const duration=Math.min(3400,1850+extras.length*280);
      category.style.setProperty('--vfvm-reveal-duration',duration+'ms');
      const scrollWhileCollapsing=()=>{
-       // Future video categories are discovered automatically by DOM order.
+       // Categories are discovered by DOM order; no hard-coded names or links.
        let next=category.nextElementSibling;
        while(next&&!next.matches('[data-vfvm-category]'))next=next.nextElementSibling;
        if(!next)return;
        const heading=next.querySelector('.vfvm-category-top')||next;
-       if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-         requestAnimationFrame(()=>{if(!page.hidden&&!expanded)heading.scrollIntoView({behavior:'instant',block:'start'});});
+       stopGuidedScroll();
+       const offset=parseFloat(getComputedStyle(heading).scrollMarginTop)||40;
+       const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+       if(reduced){
+         requestAnimationFrame(()=>{
+           if(!page.hidden&&!expanded)heading.scrollIntoView({behavior:'instant',block:'start'});
+         });
          return;
        }
-       // Follow the heading as its document position changes during collapse.
-       // One layout read and one scroll write per native animation frame; no
-       // competing smooth-scroll commands or delayed post-collapse jump.
-       let raf=0,cancelled=false,previous=0,started=0;
-       const offset=parseFloat(getComputedStyle(heading).scrollMarginTop)||40;
+       // Measure BEFORE the reveal starts shrinking. The next heading moves
+       // upward by exactly the revealed panel's height during collapse.
+       // Fixing the destination prevents the old follower from going down,
+       // reversing, and visibly bouncing as the layout shifts.
+       const startY=window.scrollY;
+       const removedHeight=reveal.getBoundingClientRect().height;
+       const nextY=startY+heading.getBoundingClientRect().top-removedHeight-offset;
+       const finalScrollHeight=document.documentElement.scrollHeight-removedHeight;
+       const maxY=Math.max(0,finalScrollHeight-window.innerHeight);
+       const endY=Math.max(0,Math.min(nextY,maxY));
+       // Avoid browser focus-revealing the collapsing Show Less button.
+       // Move keyboard focus to the incoming section without scrolling.
+       if(document.activeElement===more){
+         heading.setAttribute('tabindex','-1');
+         try{heading.focus({preventScroll:true});}catch{more.blur();}
+       }
+       let raf=0,cancelled=false,started=0;
        const stop=()=>{cancelled=true;if(raf)cancelAnimationFrame(raf);};
-       stopGuidedScroll();
        stopGuidedScroll=stop;
+       const travel=duration;
        const frame=now=>{
          if(cancelled||page.hidden||expanded||!heading.isConnected)return;
          if(!started)started=now;
-         const dt=previous?Math.min(now-previous,64):16;
-         previous=now;
-         const current=window.scrollY;
-         const desired=current+heading.getBoundingClientRect().top-offset;
-         const difference=desired-current;
-         const ease=1-Math.exp(-dt/190);
-         if(Math.abs(difference)>.7){
-           window.scrollTo({top:current+difference*ease,behavior:'instant'});
-         }
-         if(now-started<duration+650||Math.abs(difference)>2){
-           raf=requestAnimationFrame(frame);
-         }
+         const progress=Math.min(1,(now-started)/travel);
+         // One monotonic, smooth path to the FINAL section position.
+         // No changing target or corrective back-and-forth scrolls.
+         const eased=progress<.5?4*progress*progress*progress:1-Math.pow(-2*progress+2,3)/2;
+         window.scrollTo({top:startY+(endY-startY)*eased,behavior:'instant'});
+         if(progress<1)raf=requestAnimationFrame(frame);
        };
+       // First frame starts alongside the CSS closing transition.
        raf=requestAnimationFrame(frame);
      };
      // Load More must start at the FIRST newly revealed (third) video, never
