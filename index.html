@@ -9043,4 +9043,164 @@ else init();
  #vf-view-home .hero .hero-title{font-size:clamp(62px,19.5vw,79px)!important;}
 }
 </style>
+
+<!-- VIEWFINITY offline screen: isolated, lightweight, no video or asset preloads. -->
+<style id="vf275-offline-style">
+.vf-offline-screen,.vf-offline-screen *{box-sizing:border-box}
+.vf-offline-screen[hidden]{display:none!important}
+.vf-offline-screen{
+ position:fixed!important;inset:0!important;z-index:2147483647!important;
+ width:100%!important;height:100dvh!important;overflow:auto!important;
+ color:#f5f6f1!important;background:#070b08!important;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important;
+ -webkit-font-smoothing:antialiased;overscroll-behavior:contain;
+}
+.vf-offline-inner{
+ width:100%;min-height:100%;max-width:600px;margin:0 auto;
+ display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ padding:clamp(36px,7svh,64px) 24px max(34px,env(safe-area-inset-bottom,0px));
+ text-align:center;
+}
+.vf-offline-logo{font-size:clamp(22px,6.1vw,28px);font-weight:850;letter-spacing:-.065em;line-height:1.1;color:#f5f6f1}
+.vf-offline-logo sup{font-size:9px;font-weight:700;position:relative;top:-.75em;letter-spacing:0;margin-left:3px}
+.vf-offline-main{width:100%;max-width:430px;display:flex;flex-direction:column;align-items:center;margin:36px auto 32px}
+.vf-offline-icon{
+ width:clamp(92px,25vw,110px);height:clamp(92px,25vw,110px);
+ border-radius:24px;background:#222d11;
+ display:flex;align-items:center;justify-content:center;
+ color:#f5f6f1;
+}
+.vf-offline-icon svg{width:50%;height:50%;display:block}
+.vf-offline-heading{margin:29px 0 0;font-weight:850;font-size:clamp(39px,11.4vw,59px);line-height:.99;letter-spacing:-.062em;color:#f5f6f1}
+.vf-offline-heading span{display:block}
+.vf-offline-heading .vf-offline-accent{color:#84953f}
+.vf-offline-description{font-size:clamp(14px,3.8vw,17px);line-height:1.48;color:#a8aea4;max-width:328px;margin:21px 0 0;font-weight:400}
+.vf-offline-retry{
+ width:min(100%,290px);min-height:52px;margin-top:36px;
+ display:flex;align-items:center;justify-content:center;gap:11px;
+ border:0;border-radius:999px;background:#84953f;color:#070b08;
+ font:750 16px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ cursor:pointer;transition:transform .2s ease,background-color .2s ease,opacity .2s ease;
+ -webkit-tap-highlight-color:transparent;
+}
+.vf-offline-retry svg{width:19px;height:19px;display:block}
+.vf-offline-retry:hover{background:#a0b453}
+.vf-offline-retry:active{transform:scale(.97)}
+.vf-offline-retry:focus-visible{outline:2px solid #eff6d6;outline-offset:4px}
+.vf-offline-retry:disabled{opacity:.68;cursor:wait}
+.vf-offline-tagline{
+ display:flex;align-items:center;justify-content:center;gap:13px;
+ width:100%;white-space:nowrap;color:#c3c7bc;
+ font-size:clamp(8px,2.25vw,11px);font-weight:550;letter-spacing:.23em;line-height:1.3;
+}
+.vf-offline-tagline::before,.vf-offline-tagline::after{
+ content:"";display:block;flex:0 1 28px;height:1px;background:#646e5f
+}
+.vf-offline-tagline b{color:#84953f;font-weight:750}
+body.vf-offline-active{overflow:hidden!important}
+@media(max-height:690px){
+ .vf-offline-inner{padding-top:26px;padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
+ .vf-offline-main{margin:20px auto}
+ .vf-offline-icon{width:78px;height:78px;border-radius:19px}
+ .vf-offline-heading{margin-top:18px;font-size:clamp(36px,10.5vw,50px)}
+ .vf-offline-description{margin-top:13px}
+ .vf-offline-retry{margin-top:22px;min-height:48px}
+}
+@media(min-width:761px){
+ .vf-offline-inner{padding-top:65px;padding-bottom:50px}
+ .vf-offline-heading{font-size:58px}
+}
+@media(prefers-reduced-motion:reduce){.vf-offline-retry{transition:none}}
+</style>
+<div class="vf-offline-screen" id="vf-offline-overlay" role="dialog" aria-modal="true" aria-label="No internet connection" hidden>
+ 
+<div class="vf-offline-inner">
+ <div class="vf-offline-logo" aria-label="VIEWFINITY">VIEWFINITY<sup>®</sup></div>
+ <main class="vf-offline-main">
+  <div class="vf-offline-icon" aria-hidden="true">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 8.9a16 16 0 0 1 20 0M5.2 12.3a11 11 0 0 1 13.6 0M8.6 15.7a5.5 5.5 0 0 1 6.8 0"/>
+    <circle cx="12" cy="20" r="1.15" fill="currentColor" stroke="none"/>
+    <path d="M3.2 3.2 20.8 20.8" stroke="#f5f6f1" stroke-width="2.6"/>
+   </svg>
+  </div>
+  <h1 class="vf-offline-heading"><span>No Internet</span><span class="vf-offline-accent">Connection</span></h1>
+  <p class="vf-offline-description" id="vf-offline-message" role="status">Looks like you’re offline. Check your connection and try again.</p>
+  <button class="vf-offline-retry" type="button" id="vf-offline-retry">Try Again
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.4 9A7.5 7.5 0 0 1 18.5 6.5L20 12M4 12l1.5 5.5A7.5 7.5 0 0 0 18.6 15"/></svg>
+  </button>
+ </main>
+ <footer class="vf-offline-tagline"><span>CRE<b>8</b>TING BEYOND LIMITS</span></footer>
+</div>
+</div>
+<script id="vf275-offline-controller">
+(()=>{
+ 'use strict';
+ const root=document.getElementById('vf-offline-overlay');
+ const retryButton=root?.querySelector('#vf-offline-retry');
+ const status=root?.querySelector('#vf-offline-message');
+ if(!root||!retryButton||!status)return;
+ const defaultMessage='Looks like you’re offline. Check your connection and try again.';
+ let previousFocus=null;
+ let checking=false;
+ 
+async function vfOfflineProbe(){
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),6000);
+ try{
+  const result=await fetch('/offline.html?vf-connectivity='+Date.now(),{cache:'no-store',signal:controller.signal});
+  return result.ok;
+ }catch{return false}
+ finally{clearTimeout(timeout)}
+}
+
+ function showOffline(){
+  if(!root.hidden)return;
+  previousFocus=document.activeElement;
+  root.hidden=false;
+  document.body.classList.add('vf-offline-active');
+  retryButton.focus({preventScroll:true});
+ }
+ function hideOffline(){
+  if(root.hidden)return;
+  root.hidden=true;
+  document.body.classList.remove('vf-offline-active');
+  status.textContent=defaultMessage;
+  if(previousFocus&&typeof previousFocus.focus==='function')previousFocus.focus({preventScroll:true});
+  previousFocus=null;
+ }
+ async function retry(){
+  if(checking)return;
+  if(!navigator.onLine){
+   showOffline();
+   status.textContent='Still offline. Check your connection and try again.';
+   return;
+  }
+  checking=true;
+  retryButton.disabled=true;
+  status.textContent='Checking your connection…';
+  try{
+   if(await vfOfflineProbe())hideOffline();
+   else{
+    showOffline();
+    status.textContent='Still offline. Check your connection and try again.';
+   }
+  }finally{checking=false;retryButton.disabled=false}
+ }
+ retryButton.addEventListener('click',retry);
+ window.addEventListener('offline',()=>{
+  status.textContent=defaultMessage;
+  showOffline();
+ });
+ window.addEventListener('online',()=>{if(!root.hidden)retry()});
+ window.addEventListener('pageshow',()=>{if(!navigator.onLine)showOffline()});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!navigator.onLine)showOffline()});
+ if(!navigator.onLine)showOffline();
+ if('serviceWorker' in navigator){
+  const register=()=>navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
+  if(document.readyState==='complete')register();
+  else window.addEventListener('load',register,{once:true});
+ }
+})();
+</script>
 </body></html>
