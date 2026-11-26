@@ -4349,8 +4349,59 @@ html,body{margin:0}
 #vf-view-visual-motions .vfvm-category-landscape .vfvm-more-wrap{
   width:min(100%,780px);
 }
-/* Restrict extra layout/paint work to the gallery during its height transition. */
-#vf-view-visual-motions .vfvm-grid.vfvm-is-animating{overflow:hidden;}
+/* VIEWFINITY signature motion: expanding grid row with no JS frame-by-frame reflow.
+   Slow initial acceleration, cushioned final deceleration, natural-size cards. */
+#vf-view-visual-motions .vfvm-category .vfvm-grid{
+  --vfvm-stack-gap:clamp(32px,4.5vw,64px);
+  gap:0;
+  overflow-anchor:none;
+}
+#vf-view-visual-motions .vfvm-grid > .vfvm-card + .vfvm-card{
+  margin-top:var(--vfvm-stack-gap);
+}
+#vf-view-visual-motions .vfvm-reveal{
+  display:grid;
+  grid-template-rows:0fr;
+  width:100%;
+  max-width:460px;
+  min-width:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:
+    grid-template-rows var(--vfvm-reveal-duration,2300ms) cubic-bezier(.45,.02,.20,1),
+    visibility 0s linear var(--vfvm-reveal-duration,2300ms);
+}
+#vf-view-visual-motions .vfvm-category-landscape .vfvm-reveal{max-width:780px;}
+#vf-view-visual-motions .vfvm-reveal-inner{
+  min-height:0;
+  min-width:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:var(--vfvm-stack-gap);
+}
+#vf-view-visual-motions .vfvm-reveal-inner > .vfvm-card{
+  width:100%;
+  max-width:460px;
+  flex:0 0 auto;
+}
+#vf-view-visual-motions .vfvm-category-landscape .vfvm-reveal-inner > .vfvm-card{max-width:780px;}
+#vf-view-visual-motions .vfvm-reveal-inner > .vfvm-card:first-child{margin-top:var(--vfvm-stack-gap);}
+#vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-reveal{
+  grid-template-rows:1fr;
+  visibility:visible;
+  pointer-events:auto;
+  transition:
+    grid-template-rows var(--vfvm-reveal-duration,2300ms) cubic-bezier(.45,.02,.20,1),
+    visibility 0s;
+}
+@media(prefers-reduced-motion:reduce){
+  #vf-view-visual-motions .vfvm-reveal,
+  #vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-reveal{
+    transition:none!important;
+  }
+}
 </style>
 <!-- SOURCE LICENSE NOTICE (NOT DISPLAYED): Tabler Icons used on Contact page.
 MIT License. Copyright (c) 2020–2026 Paweł Kuna.
@@ -6576,8 +6627,9 @@ render();
  });
  // Stop audio/video on route changes. The poster is restored for the next visitor.
  new MutationObserver(()=>{if(page.hidden)stopAll(null)}).observe(page,{attributes:true,attributeFilter:['hidden']});
- // Each section opens fluidly and collapses fluidly using the SAME button.
- // Animate the gallery's measured height rather than instantly toggling display.
+ // VIEWFINITY signature reveal: CSS-driven, gently eased, interruptible.
+ // A zero-to-one fractional grid row grows at natural height, avoiding snaps and
+ // repeated per-frame JavaScript measurements. Each category remains independent.
  page.querySelectorAll('[data-vfvm-category]').forEach(category=>{
    const grid=category.querySelector('.vfvm-grid');
    const cards=[...category.querySelectorAll('.vfvm-card')];
@@ -6586,66 +6638,45 @@ render();
    const moreCount=category.querySelector('.vfvm-more-count');
    if(!grid||!more||!moreCount)return;
    let expanded=false;
-   let activeAnimation=null;
-   const updateButton=()=>{
-     category.classList.toggle('vfvm-expanded',expanded);
-     more.hidden=cards.length<=2;
-     more.disabled=false;
-     more.firstChild.textContent=expanded?'Show Less ':'Load More ';
-     moreCount.textContent=expanded?'(Back to 2)':'('+extras.length+' more)';
-     more.setAttribute('aria-expanded',String(expanded));
-     more.setAttribute('aria-label',expanded?'Show less: return to the first two videos':'Load more videos in this category');
-   };
-   const cleanUp=()=>{
-     if(!expanded)extras.forEach(card=>{card.hidden=true;});
-     grid.style.removeProperty('height');
-     grid.style.removeProperty('overflow');
-     grid.classList.remove('vfvm-is-animating');
-     activeAnimation=null;
-   };
-   cards.forEach((card,i)=>{card.hidden=i>=2;});
-   updateButton();
-   more.addEventListener('click',()=>{
-     if(cards.length<=2)return;
-     const opening=!expanded;
-     // Read the visible height first, so even a second tap during motion reverses smoothly.
-     const from=grid.getBoundingClientRect().height;
-     if(activeAnimation){activeAnimation.cancel();activeAnimation=null;}
-     if(!opening){
-       // Stop videos before they are folded away, avoiding hidden audio playback.
-       extras.forEach(card=>{
-         const slot=card.querySelector('[data-vfvm-video]');
-         if(slot)stop(slot);
-       });
-     }
-     // Measure the natural endpoint without ever painting the intermediate state.
-     grid.style.height='auto';
-     extras.forEach(card=>{card.hidden=!opening;});
-     const to=grid.getBoundingClientRect().height;
-     // For collapse, keep extra cards in the DOM until the shrink animation finishes.
-     if(!opening)extras.forEach(card=>{card.hidden=false;});
-     grid.style.height=from+'px';
-     grid.style.overflow='hidden';
-     expanded=opening;
-     updateButton();
-     const reducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-     if(reducedMotion||typeof grid.animate!=='function'||Math.abs(to-from)<1){
-       cleanUp();
-       return;
-     }
-     grid.classList.add('vfvm-is-animating');
-     const motion=grid.animate(
-       [{height:from+'px'},{height:to+'px'}],
-       {duration:opening?1000:850,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'}
-     );
-     activeAnimation=motion;
-     motion.onfinish=()=>{
-       if(activeAnimation!==motion)return;
-       // Restore natural height so future videos, orientation and responsive widths work.
-       cleanUp();
-       motion.cancel();
-     };
-   });
+   if(extras.length){
+     const reveal=document.createElement('div');
+     reveal.className='vfvm-reveal';
+     reveal.setAttribute('aria-hidden','true');
+     reveal.inert=true;
+     const inner=document.createElement('div');
+     inner.className='vfvm-reveal-inner';
+     extras.forEach(card=>{
+       card.hidden=false;
+       inner.appendChild(card);
+     });
+     reveal.appendChild(inner);
+     grid.appendChild(reveal);
+     // Long galleries need longer travel time so they never expand at lightning speed.
+     const duration=Math.min(3400,1850+extras.length*280);
+     category.style.setProperty('--vfvm-reveal-duration',duration+'ms');
+     more.addEventListener('click',()=>{
+       if(expanded){
+         // Pause all extra videos before reversing, including when rapidly tapping.
+         extras.forEach(card=>{
+           const slot=card.querySelector('[data-vfvm-video]');
+           if(slot)stop(slot);
+         });
+       }
+       expanded=!expanded;
+       reveal.inert=!expanded;
+       reveal.setAttribute('aria-hidden',String(!expanded));
+       category.classList.toggle('vfvm-expanded',expanded);
+       more.firstChild.textContent=expanded?'Show Less ':'Load More ';
+       moreCount.textContent=expanded?'(Back to 2)':'('+extras.length+' more)';
+       more.setAttribute('aria-expanded',String(expanded));
+       more.setAttribute('aria-label',expanded?'Show less: return to the first two videos':'Load more videos in this category');
+     });
+   }
+   more.hidden=extras.length===0;
+   more.disabled=false;
+   more.setAttribute('aria-expanded','false');
+   more.setAttribute('aria-label',extras.length?'Load more videos in this category':'No more videos in this category yet');
+   moreCount.textContent=extras.length?'('+extras.length+' more)':'';
  });
 })();
 </script><a aria-hidden="true" href="#/graphic-design" id="vf179-go" style="display:none" tabindex="-1">Graphic Design</a><script id="vf179-design-gallery-script">(()=>{'use strict';
