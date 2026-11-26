@@ -1,5 +1,5 @@
 /* VIEWFINITY branded offline fallback (only the offline page and official logo are cached). */
-const VF_OFFLINE_CACHE='viewfinity-offline-v4';
+const VF_OFFLINE_CACHE='viewfinity-offline-v5';
 const VF_OFFLINE_PATH='/offline.html';
 const VF_OFFLINE_LOGO='/assets/media/c0b84cfe6d6fdbcf67.png';
 
