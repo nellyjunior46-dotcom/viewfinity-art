@@ -91,37 +91,54 @@ body.vf-offline-active{overflow:hidden!important}
  </main>
  <footer class="vf-offline-tagline"><span>CRE<b>8</b>TING BEYOND LIMITS</span></footer>
 </div></div>
- <script>
- (()=>{
-  const button=document.getElementById('vf-offline-retry');
-  const message=document.getElementById('vf-offline-message');
-  
-async function vfOfflineProbe(){
+ <script id="vf276-offline-reconnect">
+(()=>{
+ 'use strict';
+ const button=document.getElementById('vf-offline-retry');
+ const message=document.getElementById('vf-offline-message');
+ if(!button||!message)return;
+ async function vfOfflineProbe(){
  const controller=new AbortController();
- const timeout=setTimeout(()=>controller.abort(),6000);
+ const timeout=setTimeout(()=>controller.abort(),9000);
  try{
-  const result=await fetch('/offline.html?vf-connectivity='+Date.now(),{cache:'no-store',signal:controller.signal});
-  return result.ok;
+  // A non-navigation request: the service worker never answers it from its
+  // offline cache. This establishes real connectivity to our own site.
+  const url='/sw.js?vf-connectivity='+Date.now()+'-'+Math.random().toString(36).slice(2);
+  const response=await fetch(url,{cache:'no-store',credentials:'same-origin',signal:controller.signal});
+  return response.ok && (await response.text()).includes('const VF_OFFLINE_CACHE=');
  }catch{return false}
  finally{clearTimeout(timeout)}
 }
-
-  let checking=false;
-  async function retry(){
-   if(checking)return;
-   checking=true;button.disabled=true;message.textContent='Checking your connection…';
-   try{
-    if(await vfOfflineProbe()){
-     const destination=location.pathname.endsWith('/offline.html')?'/':location.href;
-     location.replace(destination);
-     return;
-    }
-    message.textContent='Still offline. Check your connection and try again.';
-   }finally{checking=false;button.disabled=false}
+ let checking=false;
+ let recovered=false;
+ async function checkConnection(manual=false){
+  if(checking||recovered||document.hidden&&!manual)return;
+  checking=true;
+  if(manual){
+   button.disabled=true;
+   message.textContent='Checking your connection…';
   }
-  button.addEventListener('click',retry);
-  window.addEventListener('online',retry);
- })();
- </script>
+  let online=false;
+  try{online=await vfOfflineProbe()}
+  finally{checking=false;button.disabled=false}
+  if(online){
+   recovered=true;
+   message.textContent='Connection restored. Taking you back…';
+   const url=location.pathname==='/offline.html'?'/':location.href;
+   location.replace(url);
+   return;
+  }
+  if(manual)message.textContent='Still offline. Check your connection and try again.';
+ }
+ button.addEventListener('click',()=>checkConnection(true));
+ // Some mobile browsers miss the online event after switching Wi-Fi back on.
+ // Poll only while this offline page is visible, not during normal site browsing.
+ window.addEventListener('online',()=>checkConnection());
+ window.addEventListener('focus',()=>checkConnection());
+ window.addEventListener('pageshow',()=>checkConnection());
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkConnection()});
+ window.setInterval(()=>checkConnection(),4500);
+})();
+</script>
 </body>
 </html>
