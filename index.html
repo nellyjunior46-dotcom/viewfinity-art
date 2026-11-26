@@ -6632,6 +6632,16 @@ render();
  // VIEWFINITY signature reveal: CSS-driven, gently eased, interruptible.
  // A zero-to-one fractional grid row grows at natural height, avoiding snaps and
  // repeated per-frame JavaScript measurements. Each category remains independent.
+ // Only Show Less navigates; scrolling begins immediately and follows the
+ // moving next-section heading while the current category is still collapsing.
+ let stopGuidedScroll=()=>{};
+ const interruptGuidedScroll=()=>stopGuidedScroll();
+ page.addEventListener('wheel',interruptGuidedScroll,{passive:true});
+ page.addEventListener('touchstart',interruptGuidedScroll,{passive:true});
+ page.addEventListener('pointerdown',interruptGuidedScroll,{passive:true});
+ window.addEventListener('keydown',event=>{
+   if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(event.key))interruptGuidedScroll();
+ });
  page.querySelectorAll('[data-vfvm-category]').forEach(category=>{
    const grid=category.querySelector('.vfvm-grid');
    const cards=[...category.querySelectorAll('.vfvm-card')];
@@ -6656,27 +6666,42 @@ render();
      // Long galleries need longer travel time so they never expand at lightning speed.
      const duration=Math.min(3400,1850+extras.length*280);
      category.style.setProperty('--vfvm-reveal-duration',duration+'ms');
-     // Only Show Less navigates; a later section added to the page is picked up automatically.
-     // Wait until the shrinking row has finished, so the scroll lands on a stable heading.
-     let collapseVersion=0;
-     let scrollCompleted=false;
-     const isReducedMotion=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-     const scrollAfterCollapse=(version)=>{
-       if(version!==collapseVersion||expanded||scrollCompleted||page.hidden)return;
-       scrollCompleted=true;
+     const scrollWhileCollapsing=()=>{
+       // Future video categories are discovered automatically by DOM order.
        let next=category.nextElementSibling;
        while(next&&!next.matches('[data-vfvm-category]'))next=next.nextElementSibling;
        if(!next)return;
        const heading=next.querySelector('.vfvm-category-top')||next;
-       requestAnimationFrame(()=>{
-         if(version!==collapseVersion||expanded||page.hidden)return;
-         heading.scrollIntoView({behavior:isReducedMotion()?'instant':'smooth',block:'start'});
-       });
+       if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+         requestAnimationFrame(()=>{if(!page.hidden&&!expanded)heading.scrollIntoView({behavior:'instant',block:'start'});});
+         return;
+       }
+       // Follow the heading as its document position changes during collapse.
+       // One layout read and one scroll write per native animation frame; no
+       // competing smooth-scroll commands or delayed post-collapse jump.
+       let raf=0,cancelled=false,previous=0,started=0;
+       const offset=parseFloat(getComputedStyle(heading).scrollMarginTop)||40;
+       const stop=()=>{cancelled=true;if(raf)cancelAnimationFrame(raf);};
+       stopGuidedScroll();
+       stopGuidedScroll=stop;
+       const frame=now=>{
+         if(cancelled||page.hidden||expanded||!heading.isConnected)return;
+         if(!started)started=now;
+         const dt=previous?Math.min(now-previous,64):16;
+         previous=now;
+         const current=window.scrollY;
+         const desired=current+heading.getBoundingClientRect().top-offset;
+         const difference=desired-current;
+         const ease=1-Math.exp(-dt/190);
+         if(Math.abs(difference)>.7){
+           window.scrollTo({top:current+difference*ease,behavior:'instant'});
+         }
+         if(now-started<duration+650||Math.abs(difference)>2){
+           raf=requestAnimationFrame(frame);
+         }
+       };
+       raf=requestAnimationFrame(frame);
      };
-     reveal.addEventListener('transitionend',event=>{
-       if(event.target!==reveal||event.propertyName!=='grid-template-rows'||expanded)return;
-       scrollAfterCollapse(collapseVersion);
-     });
      more.addEventListener('click',()=>{
        if(expanded){
          // Pause all extra videos before reversing, including when rapidly tapping.
@@ -6686,15 +6711,9 @@ render();
          });
        }
        expanded=!expanded;
-       collapseVersion+=1;
-       const version=collapseVersion;
-       scrollCompleted=false;
-       // Reduced-motion or browsers that skip transitionend still advance the visitor.
-       // The version check cancels old jumps when Load More reverses the collapse.
-       if(!expanded){
-         if(isReducedMotion())requestAnimationFrame(()=>scrollAfterCollapse(version));
-         else setTimeout(()=>scrollAfterCollapse(version),duration+160);
-       }
+       // Collapse and movement begin together; no waiting for transitionend.
+       if(!expanded)scrollWhileCollapsing();
+       else stopGuidedScroll();
        reveal.inert=!expanded;
        reveal.setAttribute('aria-hidden',String(!expanded));
        category.classList.toggle('vfvm-expanded',expanded);
