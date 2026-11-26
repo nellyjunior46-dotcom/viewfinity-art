@@ -9152,6 +9152,7 @@ body.vf-offline-active{overflow:hidden!important}
  let previousFocus=null;
  let checking=false;
  let pendingDestination=null;
+ let pendingLink=null;
 
  // Do not cover the page simply because connectivity drops: visitors may
  // still need to read or copy contact information they already have open.
@@ -9218,6 +9219,7 @@ body.vf-offline-active{overflow:hidden!important}
   if(!isNewPage(href))return;
   event.preventDefault();
   event.stopImmediatePropagation();
+  pendingLink=link;
   window.__vfOfflineNavigationAttempt(href);
  },true);
 
@@ -9234,8 +9236,16 @@ body.vf-offline-active{overflow:hidden!important}
 
  function resumeNavigation(){
   const destination=pendingDestination;
+  const link=pendingLink;
   pendingDestination=null;
+  pendingLink=null;
   if(!destination)return;
+  // Use the original in-site navigation handler, keeping its scroll anchors
+  // and page transition animations exactly as they behaved before.
+  if(link?.isConnected && link.getAttribute('href')?.trim()===destination){
+   link.click();
+   return;
+  }
   if(destination.startsWith('#')){
    // If a browser history action already changed the URL while offline,
    // re-run VIEWFINITY's route restoration after connection resumes.
