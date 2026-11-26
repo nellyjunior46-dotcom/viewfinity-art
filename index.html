@@ -6574,21 +6574,34 @@ render();
  });
  // Stop audio/video on route changes. The poster is restored for the next visitor.
  new MutationObserver(()=>{if(page.hidden)stopAll(null)}).observe(page,{attributes:true,attributeFilter:['hidden']});
- // Independent category-level reveal; never load a YouTube iframe until Play is clicked.
+ // Each category uses ONE reversible Load More / Show Less button.
+ // The first two stay visible; expanded thumbnails are lazy-loaded, with no video iframe until Play.
  page.querySelectorAll('[data-vfvm-category]').forEach(category=>{
    const cards=[...category.querySelectorAll('.vfvm-card')];
    const more=category.querySelector('.vfvm-more');
    const moreCount=category.querySelector('.vfvm-more-count');
-   let visible=2;
+   if(!more||!moreCount)return;
+   let expanded=false;
    const render=()=>{
+     const visible=expanded?cards.length:2;
      cards.forEach((card,i)=>{card.hidden=i>=visible;});
-     category.classList.toggle('vfvm-expanded',visible>2);
-     const remaining=Math.max(0,cards.length-visible);
-     more.disabled=remaining===0;
-     moreCount.textContent=remaining? '('+remaining+' remaining)':'(More coming soon)';
-     more.setAttribute('aria-label',remaining?'Load '+Math.min(2,remaining)+' more videos in this category':'No more videos yet in this category');
+     category.classList.toggle('vfvm-expanded',expanded);
+     // No toggle is needed when a category contains two or fewer videos.
+     more.hidden=cards.length<=2;
+     more.disabled=false;
+     more.firstChild.textContent=expanded?'Show Less ':'Load More ';
+     moreCount.textContent=expanded?'(Back to 2)':'('+Math.max(0,cards.length-2)+' more)';
+     more.setAttribute('aria-expanded',String(expanded));
+     more.setAttribute('aria-label',expanded?'Show less: return to the first two videos':'Load more videos in this category');
    };
-   more.addEventListener('click',()=>{if(visible>=cards.length)return;visible=Math.min(visible+2,cards.length);render();});
+   more.addEventListener('click',()=>{
+     if(expanded){
+       // Stop any players about to be hidden, so audio never continues after collapsing.
+       cards.slice(2).forEach(card=>{const slot=card.querySelector('[data-vfvm-video]');if(slot)stop(slot);});
+     }
+     expanded=!expanded;
+     render();
+   });
    render();
  });
 })();
