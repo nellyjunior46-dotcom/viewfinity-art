@@ -4358,6 +4358,8 @@ html,body{margin:0}
   gap:0;
   overflow-anchor:none;
 }
+/* Keep the focused Load More button from anchoring the viewport at the end of the expanded list. */
+#vf-view-visual-motions .vfvm-category{overflow-anchor:none;}
 #vf-view-visual-motions .vfvm-grid > .vfvm-card + .vfvm-card{
   margin-top:var(--vfvm-stack-gap);
 }
@@ -6702,6 +6704,42 @@ render();
        };
        raf=requestAnimationFrame(frame);
      };
+     // Load More must start at the FIRST newly revealed (third) video, never
+     // preserve the button/last-video position while the gallery grows.
+     const scrollToFirstRevealed=()=>{
+       const firstNew=extras[0];
+       if(!firstNew)return;
+       const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+       const offset=Math.max(62,Math.min(108,window.innerHeight*.11));
+       if(reduced){
+         requestAnimationFrame(()=>{
+           if(expanded&&!page.hidden&&firstNew.isConnected){
+             window.scrollTo({top:window.scrollY+firstNew.getBoundingClientRect().top-offset,behavior:'instant'});
+           }
+         });
+         return;
+       }
+       let raf=0,cancelled=false,previous=0,started=0;
+       const stop=()=>{cancelled=true;if(raf)cancelAnimationFrame(raf);};
+       stopGuidedScroll();
+       stopGuidedScroll=stop;
+       const frame=now=>{
+         if(cancelled||page.hidden||!expanded||!firstNew.isConnected)return;
+         if(!started)started=now;
+         const dt=previous?Math.min(now-previous,64):16;
+         previous=now;
+         const current=window.scrollY;
+         const desired=current+firstNew.getBoundingClientRect().top-offset;
+         const difference=desired-current;
+         if(Math.abs(difference)>.7){
+           window.scrollTo({top:current+difference*(1-Math.exp(-dt/185)),behavior:'instant'});
+         }
+         // The target stays aligned even as the reveal opens, then gives full
+         // manual scroll control back to the visitor.
+         if(now-started<1100&&Math.abs(difference)>1.5)raf=requestAnimationFrame(frame);
+       };
+       raf=requestAnimationFrame(frame);
+     };
      more.addEventListener('click',()=>{
        if(expanded){
          // Pause all extra videos before reversing, including when rapidly tapping.
@@ -6721,6 +6759,7 @@ render();
        moreCount.textContent=expanded?'(Back to 2)':'('+extras.length+' more)';
        more.setAttribute('aria-expanded',String(expanded));
        more.setAttribute('aria-label',expanded?'Show less: return to the first two videos':'Load more videos in this category');
+       if(expanded)scrollToFirstRevealed();
      });
    }
    more.hidden=extras.length===0;
