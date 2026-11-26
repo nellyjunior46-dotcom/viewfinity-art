@@ -6669,7 +6669,7 @@ render();
      const duration=Math.min(3400,1850+extras.length*280);
      category.style.setProperty('--vfvm-reveal-duration',duration+'ms');
      const scrollWhileCollapsing=()=>{
-       // Categories are discovered by DOM order; no hard-coded names or links.
+       // Always discover the following category, including categories added later.
        let next=category.nextElementSibling;
        while(next&&!next.matches('[data-vfvm-category]'))next=next.nextElementSibling;
        if(!next)return;
@@ -6683,37 +6683,65 @@ render();
          });
          return;
        }
-       // Measure BEFORE the reveal starts shrinking. The next heading moves
-       // upward by exactly the revealed panel's height during collapse.
-       // Fixing the destination prevents the old follower from going down,
-       // reversing, and visibly bouncing as the layout shifts.
-       const startY=window.scrollY;
-       const removedHeight=reveal.getBoundingClientRect().height;
-       const nextY=startY+heading.getBoundingClientRect().top-removedHeight-offset;
-       const finalScrollHeight=document.documentElement.scrollHeight-removedHeight;
-       const maxY=Math.max(0,finalScrollHeight-window.innerHeight);
-       const endY=Math.max(0,Math.min(nextY,maxY));
-       // Avoid browser focus-revealing the collapsing Show Less button.
-       // Move keyboard focus to the incoming section without scrolling.
+
+       // The former animation followed its own clock, while the CSS grid
+       // collapsed with a different easing curve. That let the viewport
+       // reverse direction (bounce). Drive BOTH motions with the same
+       // measured collapse progress instead.
+       const root=document.documentElement;
+       const body=document.body;
+       const previousRootAnchor=root.style.overflowAnchor;
+       const previousBodyAnchor=body.style.overflowAnchor;
+       const previousScrollBehavior=root.style.scrollBehavior;
+       root.style.overflowAnchor='none';
+       body.style.overflowAnchor='none';
+       root.style.scrollBehavior='auto';
+
+       const initialHeight=reveal.getBoundingClientRect().height;
+       const startScrollY=window.scrollY;
+       const initialHeadingTop=heading.getBoundingClientRect().top;
+       const finalHeadingDocumentY=startScrollY+initialHeadingTop-initialHeight;
+       const finalMaxScroll=Math.max(0,root.scrollHeight-initialHeight-window.innerHeight);
+       const finalScrollY=Math.max(0,Math.min(finalHeadingDocumentY-offset,finalMaxScroll));
+       const finalHeadingTop=finalHeadingDocumentY-finalScrollY;
+       // The button must not auto-scroll itself back into view while it moves.
        if(document.activeElement===more){
          heading.setAttribute('tabindex','-1');
          try{heading.focus({preventScroll:true});}catch{more.blur();}
        }
+
        let raf=0,cancelled=false,started=0;
-       const stop=()=>{cancelled=true;if(raf)cancelAnimationFrame(raf);};
-       stopGuidedScroll=stop;
-       const travel=duration;
-       const frame=now=>{
-         if(cancelled||page.hidden||expanded||!heading.isConnected)return;
-         if(!started)started=now;
-         const progress=Math.min(1,(now-started)/travel);
-         // One monotonic, smooth path to the FINAL section position.
-         // No changing target or corrective back-and-forth scrolls.
-         const eased=progress<.5?4*progress*progress*progress:1-Math.pow(-2*progress+2,3)/2;
-         window.scrollTo({top:startY+(endY-startY)*eased,behavior:'instant'});
-         if(progress<1)raf=requestAnimationFrame(frame);
+       const cleanup=()=>{
+         root.style.overflowAnchor=previousRootAnchor;
+         body.style.overflowAnchor=previousBodyAnchor;
+         root.style.scrollBehavior=previousScrollBehavior;
+         if(stopGuidedScroll===stop)stopGuidedScroll=()=>{};
        };
-       // First frame starts alongside the CSS closing transition.
+       const stop=()=>{if(cancelled)return;cancelled=true;if(raf)cancelAnimationFrame(raf);cleanup();};
+       stopGuidedScroll=stop;
+       const frame=now=>{
+         if(cancelled)return;
+         if(page.hidden||expanded||!heading.isConnected){stop();return;}
+         if(!started)started=now;
+         const currentHeight=reveal.getBoundingClientRect().height;
+         const progress=initialHeight>0
+           ?Math.max(0,Math.min(1,(initialHeight-currentHeight)/initialHeight))
+           :1;
+         // A single shared eased timeline: the heading moves in one direction
+         // as the panel shrinks. ScrollY also never overshoots then reverses.
+         const targetTop=initialHeadingTop+(finalHeadingTop-initialHeadingTop)*progress;
+         const correction=heading.getBoundingClientRect().top-targetTop;
+         if(Math.abs(correction)>.25){
+           window.scrollTo({top:window.scrollY+correction,behavior:'instant'});
+         }
+         if(progress<.9999&&now-started<duration+100){
+           raf=requestAnimationFrame(frame);
+         }else{
+           // Let CSS settle before giving scroll anchoring back to the browser.
+           raf=requestAnimationFrame(()=>stop());
+         }
+       };
+       // Handler starts now; CSS collapse starts in this same click event.
        raf=requestAnimationFrame(frame);
      };
      // Load More must start at the FIRST newly revealed (third) video, never
