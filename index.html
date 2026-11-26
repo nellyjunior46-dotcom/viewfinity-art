@@ -4542,7 +4542,7 @@ body.is-entered #vf-view-home{transform:scale(1);}
 <a aria-label="VIEWFINITY homepage" class="vf242-mobile-brand" href="#/home"><img width="1048" height="144" alt="VIEWFINITY" decoding="async" src="assets/media/c0b84cfe6d6fdbcf67.png"/></a>
 <a class="vf242-top-link vf242-top-link-last page-link" data-transition-title="ABOUT" href="#/about">ABOUT</a>
 </div><div aria-hidden="true" class="vf208-parallax-frame"><picture class="vf261-hero-picture"><source media="(max-width:760px)" srcset="assets/media/fb8fa8d74cfc476172-v254.webp"/><img decoding="async" fetchpriority="high" width="1671" height="941" alt="" class="vf208-parallax-img" src="assets/media/7c89e602c7da629475.webp"/></picture><video class="vf272-hero-video" autoplay muted loop playsinline webkit-playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture><source data-src="assets/media/DIVA%20OPT%2002.mp4" type="video/mp4"></video></div>
-<div class="shell hero-content"><div class="hero-stage"><img loading="lazy" decoding="async" width="1100" height="950" alt="" aria-hidden="true" class="hero-orb" src="assets/media/5724f2dab16e45d2cf.webp"/><h1 class="hero-title" id="hero-heading"><span class="hero-line"><span class="hero-line-inner">KR8TING</span></span><span class="hero-line"><span class="hero-line-inner">BEYOND</span></span><span class="hero-line"><span class="hero-line-inner accent">LIMITS</span></span></h1></div><p class="hero-manifesto">A space for bold thinkers<br/>and visual storytellers.</p></div><div aria-label="Studio introduction" class="vf242-mobile-caption">
+<div class="shell hero-content"><div class="hero-stage"><img loading="lazy" decoding="async" width="1100" height="950" alt="" aria-hidden="true" class="hero-orb" src="assets/media/5724f2dab16e45d2cf.webp"/><h1 class="hero-title" id="hero-heading"><span class="hero-line"><span class="hero-line-inner">CRE8TING</span></span><span class="hero-line"><span class="hero-line-inner">BEYOND</span></span><span class="hero-line"><span class="hero-line-inner accent">LIMITS</span></span></h1></div><p class="hero-manifesto">A space for bold thinkers<br/>and visual storytellers.</p></div><div aria-label="Studio introduction" class="vf242-mobile-caption">
 <div class="vf242-caption-left"><span>VIEWFINITY® STUDIO</span><strong>STORIES IN MOTION</strong></div>
 <div class="vf242-caption-right"><span>BASED IN TANZANIA</span><strong>WORKING GLOBALLY</strong></div>
 </div></section>
@@ -9026,6 +9026,21 @@ else init();
 }
 @media(max-width:760px) and (max-height:680px){
  #vf-view-home .hero .hero-stage{top:62%!important;}
+}
+</style>
+<!-- VIEWFINITY V2.74: slightly smaller hero title only; preserve existing stage position, motion, and spacing. -->
+<style id="vf274-hero-title-size">
+@media(min-width:761px){
+ #vf-view-home .hero .hero-title{font-size:clamp(73px,10.3vw,156px)!important;}
+}
+@media(max-width:760px){
+ #vf-view-home .hero .hero-title{font-size:clamp(73px,22.5vw,108px)!important;}
+}
+@media(max-width:360px){
+ #vf-view-home .hero .hero-title{font-size:clamp(66px,20.7vw,79px)!important;}
+}
+@media(max-width:760px) and (max-height:680px){
+ #vf-view-home .hero .hero-title{font-size:clamp(62px,19.5vw,79px)!important;}
 }
 </style>
 </body></html>
