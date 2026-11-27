@@ -574,3 +574,17 @@ body:has(.menu-overlay.is-open) .site-header .vf-brand-header .vf-logo-black{dis
 .vf-editing-starter-notice p:last-child{max-width:820px;margin:0;color:#ABB8A5;font-size:clamp(15px,1.2vw,18px);line-height:1.72}
 .vf-editing-starter-notice strong{color:#F5F7F2;font-weight:570}
 @media(max-width:760px){.vf-editing-starter-notice{display:block;margin-top:31px;padding-top:23px}.vf-editing-starter-notice .vf-editing-starter-label{margin:0 0 14px}.vf-editing-starter-notice p:last-child{font-size:15px;line-height:1.68}}
+
+
+/* GRADUATION — editorial package collection uses the existing wedding-tier design system */
+.vf-graduation-page .detail-summary{max-width:1000px}
+.vf-graduation-page .vf-wedding-tier{padding-top:clamp(40px,5vw,76px);padding-bottom:clamp(37px,4.5vw,65px)}
+.vf-graduation-page .vf-wedding-tier-top{margin-bottom:clamp(30px,3.5vw,52px)}
+.vf-graduation-page .vf-grad-details-two{grid-template-columns:1.05fr .95fr}
+.vf-graduation-page .vf-wedding-features li{max-width:390px}
+@media(max-width:760px){
+ .vf-graduation-page .vf-wedding-tier{padding:37px 0 39px}
+ .vf-graduation-page .vf-grad-details-two{grid-template-columns:minmax(0,1fr)}
+ .vf-graduation-page .vf-wedding-tier-name h3{font-size:clamp(45px,12vw,67px)}
+ .vf-graduation-page .vf-wedding-tier-bottom>span{max-width:125px}
+}
