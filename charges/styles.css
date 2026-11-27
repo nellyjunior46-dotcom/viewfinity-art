@@ -716,3 +716,40 @@ body:has(.menu-overlay.is-open) .site-header .vf-brand-header .vf-logo-black{dis
  .vf-photo-service-scope>span,.vf-photo-pricing-note>span{display:block;margin-bottom:15px}
  .vf-photo-services .vf-wedding-tier-bottom>span{max-width:135px}
 }
+
+
+/* BRANDING — unified VIEWFINITY editorial rates, deliverables and printing scope */
+.vf-branding-page .detail-hero h1{max-width:1050px}
+.vf-branding-section{padding-top:clamp(32px,4vw,65px);padding-bottom:clamp(75px,9vw,135px)}
+.vf-brand-rate-heading h2{font-size:clamp(40px,5.4vw,81px);font-weight:490;letter-spacing:-.065em;line-height:1.05;margin:14px 0 clamp(33px,4vw,55px)}
+.vf-brand-rate-heading h2 em{color:#A5B86A;font-style:normal}
+.vf-brand-rate{display:flex;justify-content:space-between;align-items:end;gap:clamp(30px,5vw,85px);border-top:1px solid #4B5748;border-bottom:1px solid #4B5748;padding:clamp(32px,4.5vw,67px) 0}
+.vf-brand-rate-label{font-size:11px;letter-spacing:.17em;color:#CADA6F;font-weight:600}
+.vf-brand-price{font-size:clamp(40px,6.1vw,97px);white-space:nowrap;letter-spacing:-.075em;line-height:1.1;font-weight:500;margin:clamp(17px,2vw,28px) 0 0;color:#F5F7F2}
+.vf-brand-price small{color:#A5B86A;font-size:clamp(14px,1.55vw,21px);font-weight:520;letter-spacing:0;vertical-align:.2em}
+.vf-brand-rate-right{flex:0 1 450px;display:flex;align-items:flex-start;flex-direction:column;gap:24px}
+.vf-brand-rate-right p{font-size:clamp(15px,1.3vw,19px);line-height:1.65;color:#BBC8B5;max-width:450px;margin:0}
+.vf-branding-page .vf-brand-book{display:inline-flex;align-items:center;justify-content:center;background:#CADA6F;color:#111911;font-size:12px;letter-spacing:.07em;font-weight:650;min-height:58px;padding:12px 27px;border-radius:999px}
+.vf-branding-page .vf-brand-book>span{color:#111911}
+.vf-brand-areas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,50px);margin-top:clamp(40px,5.5vw,75px)}
+.vf-brand-area{min-width:0;border-top:1px solid #54604D;padding-top:clamp(23px,2.5vw,36px)}
+.vf-brand-area-index{font-size:11px;font-weight:600;letter-spacing:.14em;color:#CADA6F}
+.vf-brand-area h3{font-size:clamp(26px,2.65vw,41px);font-weight:480;letter-spacing:-.055em;line-height:1.18;margin:clamp(20px,2.5vw,35px) 0 16px;max-width:360px}
+.vf-brand-area>p{font-size:clamp(14px,1.07vw,17px);color:#B6C5AF;line-height:1.65;margin:0 0 clamp(23px,3vw,42px);max-width:390px}
+.vf-brand-area .vf-wedding-features li{font-size:clamp(13px,1.1vw,16px);line-height:1.56}
+.vf-brand-pricing-note{margin-top:clamp(45px,6vw,90px);padding-top:clamp(27px,3vw,45px);border-top:1px solid #4B5748;display:grid;grid-template-columns:minmax(145px,.42fr) minmax(0,1.58fr);gap:clamp(20px,4vw,60px)}
+.vf-brand-pricing-note span{font-size:11px;font-weight:600;letter-spacing:.14em;color:#CADA6F;line-height:1.6}
+.vf-brand-pricing-note p{font-size:clamp(14px,1.2vw,18px);line-height:1.75;color:#ABB8A5;margin:0;max-width:900px}
+.vf-brand-pricing-note strong{color:#F5F7F2;font-weight:580}
+@media(max-width:900px){.vf-brand-areas{grid-template-columns:repeat(2,minmax(0,1fr))}.vf-brand-rate{align-items:start}}
+@media(max-width:760px){
+ .vf-branding-page .detail-hero{padding-bottom:0}
+ .vf-branding-section{padding-top:48px;padding-bottom:75px}
+ .vf-brand-rate{display:block}
+ .vf-brand-rate-right{margin-top:24px}
+ .vf-brand-areas{grid-template-columns:minmax(0,1fr);gap:35px}
+ .vf-brand-area h3{font-size:clamp(29px,7vw,39px)}
+ .vf-brand-pricing-note{display:block}
+ .vf-brand-pricing-note span{display:block;margin-bottom:15px}
+ .vf-brand-price{font-size:clamp(44px,10vw,69px)}
+}
