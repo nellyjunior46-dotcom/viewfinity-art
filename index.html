@@ -4538,6 +4538,31 @@ try{
 #vf-view-contact .vf125-package-shortcut-link{padding:8px 0;font-size:12px}
 }
 </style>
+
+<style id="vf-subpage-spacing-polish">
+/* VIEWFINITY page rhythm: headings sit near the brand header, not halfway down the viewport.
+   Keeps the homepage's intentionally cinematic hero and long-form section compositions intact. */
+:root{--vf-subpage-top:clamp(108px,10vw,136px)}
+#vf-view-contact .vf125-page{padding-top:var(--vf-subpage-top)!important}
+#vf-view-contact .vf125-lead{padding-bottom:clamp(30px,3.8vw,54px)!important}
+#vf-view-about .vf119-opening{padding-top:var(--vf-subpage-top)!important}
+#vf-view-graphic-design .vf179-main,
+#vf-view-visual-motions .vf179-main,
+#vf-view-photography .vf182-main{padding-top:var(--vf-subpage-top)!important}
+#vf-view-store .vfs-hero,
+#vf-view-asset .vfs-detail-hero,
+#vf-view-checkout .vfc-head,
+#vf-view-colors .vf136-edu,
+#vf-view-color .vf136-edu,
+#vf-view-brands .vf136-edu,
+#vf-view-brand .vf136-edu,
+#vf-view-studio .vf141-hero,
+#vf-view-classroom-hub .vf152-classroom-hero{padding-top:var(--vf-subpage-top)!important}
+@media(max-width:760px){
+ :root{--vf-subpage-top:clamp(100px,14vw,120px)}
+ #vf-view-contact .vf125-lead{padding-bottom:clamp(26px,6vw,39px)!important}
+}
+</style>
 </head>
 <body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
