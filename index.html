@@ -4509,6 +4509,16 @@ try{
    observer.disconnect();
  });
  observer.observe(document,{childList:true,subtree:true});
+ // Never leave Contact covered if a browser blocks the handoff script.
+ setTimeout(()=>{
+   if(!document.documentElement.classList.contains('vf-charges-handoff'))return;
+   observer.disconnect();
+   document.documentElement.classList.remove('vf-charges-handoff','vf-charges-waiting');
+   document.getElementById('vf-curtain-system')?.classList.remove('is-active');
+   document.getElementById('preloader')?.classList.add('is-gone');
+   document.body?.classList.add('is-entered');
+   try{sessionStorage.removeItem('vf-charges-handoff-v2');sessionStorage.removeItem('vf-wipe-v14')}catch(_){}
+ },8000);
 }catch(error){console.warn('VIEWFINITY charges handoff init',error)}
 })();</script>
 </head>
