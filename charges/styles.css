@@ -559,3 +559,10 @@ body:has(.menu-overlay.is-open) .site-header .vf-brand-header .vf-logo-black{dis
  .vf-editing-row-link{grid-column:2}
  .vf-editing-bundle-bottom .vf-master-cta{width:100%}
 }
+
+
+/* Video editing: explicit length-specific pricing selections */
+.vf-editing-option .vf-editing-select{display:inline-flex;align-items:center;justify-content:space-between;width:max-content;max-width:100%;min-height:49px;margin-top:clamp(19px,2vw,30px);padding:6px 7px 6px 18px;gap:10px;font-size:10px;letter-spacing:.045em;white-space:nowrap}
+.vf-editing-option .vf-editing-select::after{flex:0 0 32px;width:32px;height:32px;font-size:18px}
+.vf-editing-bundle-footnote{font-size:12px;color:#A5B86A;line-height:1.4}
+@media(max-width:480px){.vf-editing-option .vf-editing-select{min-height:53px;font-size:11px}}
