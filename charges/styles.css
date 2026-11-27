@@ -182,3 +182,9 @@
  .detail-hero{padding-bottom:55px}
 }
 @media(max-width:380px){.work-title{font-size:clamp(23px,6.6vw,27px)}.custom h2{font-size:clamp(39px,10.7vw,45px)}}
+
+/* Consistent minimalist footer across /charges and its six detail pages. */
+.section-heading .section-description{font-size:clamp(15px,1.35vw,18px);line-height:1.72;color:#AAB6A5;letter-spacing:0;font-weight:400;max-width:640px;margin:clamp(15px,2vw,24px) 0 0}
+.vf-charges-min-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid rgba(221,236,213,.24);padding-top:21px;padding-bottom:26px;color:#B8C4B4;text-transform:uppercase;font:500 11px/1.45 Inter,Arial,sans-serif;letter-spacing:.065em}
+.vf-charges-min-footer span:last-child{text-align:right}
+@media(max-width:760px){.section-heading .section-description{font-size:15px;line-height:1.65;margin-top:16px}.vf-charges-min-footer{flex-direction:row;flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:9px;padding-top:17px;padding-bottom:22px;font-size:clamp(9px,2.45vw,11px);letter-spacing:.018em}.vf-charges-min-footer span{white-space:nowrap}}
