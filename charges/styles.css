@@ -566,3 +566,11 @@ body:has(.menu-overlay.is-open) .site-header .vf-brand-header .vf-logo-black{dis
 .vf-editing-option .vf-editing-select::after{flex:0 0 32px;width:32px;height:32px;font-size:18px}
 .vf-editing-bundle-footnote{font-size:12px;color:#A5B86A;line-height:1.4}
 @media(max-width:480px){.vf-editing-option .vf-editing-select{min-height:53px;font-size:11px}}
+
+
+/* Long-form pricing disclosure — intentional, understated editorial note */
+.vf-editing-starter-notice{display:grid;grid-template-columns:minmax(130px,.4fr) minmax(0,1.6fr);gap:clamp(24px,4vw,66px);align-items:start;margin-top:clamp(30px,4vw,60px);padding-top:clamp(25px,3vw,42px);border-top:1px solid #4B5748}
+.vf-editing-starter-notice .vf-editing-starter-label{margin:4px 0 0;font-size:11px;line-height:1.5;letter-spacing:.16em;font-weight:600;color:#CADA6F}
+.vf-editing-starter-notice p:last-child{max-width:820px;margin:0;color:#ABB8A5;font-size:clamp(15px,1.2vw,18px);line-height:1.72}
+.vf-editing-starter-notice strong{color:#F5F7F2;font-weight:570}
+@media(max-width:760px){.vf-editing-starter-notice{display:block;margin-top:31px;padding-top:23px}.vf-editing-starter-notice .vf-editing-starter-label{margin:0 0 14px}.vf-editing-starter-notice p:last-child{font-size:15px;line-height:1.68}}
