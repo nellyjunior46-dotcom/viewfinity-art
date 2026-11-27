@@ -4322,52 +4322,44 @@ html,body{margin:0}
  .vfvm-more-wrap{padding:45px 0 90px}
 }
 @media(prefers-reduced-motion:reduce){.vfvm-poster>img,.vfvm-play-icon{transition:none}}
-/* VIEWFINITY Visuals & Motion: one video at a time, vertically stacked.
-   Two visible per category initially; Load More reveals two more.
-   Keep portrait and landscape players at their natural proportions. */
+/* VIEWFINITY Visuals & Motion — desktop: three films across in every category.
+   Tablet: two columns. Mobile: one full-width film per row.
+   Reveal keeps the existing smooth collapse animation and synchronized scroll. */
+#vf-view-visual-motions .vfvm-category{
+  --vfvm-column-gap:clamp(15px,2.1vw,35px);
+  --vfvm-row-gap:clamp(32px,4.5vw,64px);
+  overflow-anchor:none;
+}
 #vf-view-visual-motions .vfvm-category .vfvm-grid,
 #vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-grid{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:clamp(32px,4.5vw,64px);
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:start;
+  column-gap:var(--vfvm-column-gap);
+  row-gap:0;
+  width:100%;
   max-width:none;
+  overflow-anchor:none;
 }
 #vf-view-visual-motions .vfvm-category .vfvm-grid > .vfvm-card{
   width:100%;
-  max-width:460px;
-  flex:0 0 auto;
-}
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-grid > .vfvm-card{
-  max-width:780px;
+  max-width:none;
+  min-width:0;
 }
 #vf-view-visual-motions .vfvm-media[data-vfvm-video-format="landscape"]{aspect-ratio:16/9}
 #vf-view-visual-motions .vfvm-category .vfvm-more-wrap{
-  width:min(100%,460px);
+  width:100%;
   justify-content:center;
 }
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-more-wrap{
-  width:min(100%,780px);
-}
-/* The next category lands with its title and introduction comfortably in view. */
-#vf-view-visual-motions .vfvm-category-top{scroll-margin-top:clamp(28px,5vw,74px);}
-/* VIEWFINITY signature motion: expanding grid row with no JS frame-by-frame reflow.
-   Slow initial acceleration, cushioned final deceleration, natural-size cards. */
-#vf-view-visual-motions .vfvm-category .vfvm-grid{
-  --vfvm-stack-gap:clamp(32px,4.5vw,64px);
-  gap:0;
-  overflow-anchor:none;
-}
-/* Keep the focused Load More button from anchoring the viewport at the end of the expanded list. */
-#vf-view-visual-motions .vfvm-category{overflow-anchor:none;}
-#vf-view-visual-motions .vfvm-grid > .vfvm-card + .vfvm-card{
-  margin-top:var(--vfvm-stack-gap);
-}
+/* The next category lands with its title and introduction in view. */
+#vf-view-visual-motions .vfvm-category-top{scroll-margin-top:clamp(28px,5vw,74px)}
+/* Full-width spanning reveal flows into further three-column rows. */
 #vf-view-visual-motions .vfvm-reveal{
   display:grid;
+  grid-column:1/-1;
   grid-template-rows:0fr;
   width:100%;
-  max-width:460px;
+  max-width:none;
   min-width:0;
   visibility:hidden;
   pointer-events:none;
@@ -4375,26 +4367,29 @@ html,body{margin:0}
     grid-template-rows var(--vfvm-reveal-duration,2300ms) cubic-bezier(.45,.02,.20,1),
     visibility 0s linear var(--vfvm-reveal-duration,2300ms);
 }
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-reveal{max-width:780px;}
 #vf-view-visual-motions .vfvm-reveal-inner{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:start;
+  column-gap:var(--vfvm-column-gap);
+  row-gap:var(--vfvm-row-gap);
   min-height:0;
   min-width:0;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:var(--vfvm-stack-gap);
+}
+/* A zero-height first row creates the normal gap above the first revealed row,
+   entirely hidden while the reveal is collapsed. */
+#vf-view-visual-motions .vfvm-reveal-inner::before{
+  content:"";
+  grid-column:1/-1;
+  display:block;
+  height:0;
 }
 #vf-view-visual-motions .vfvm-reveal-inner > .vfvm-card{
+  min-width:0;
   width:100%;
-  max-width:460px;
-  flex:0 0 auto;
+  max-width:none;
 }
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-reveal-inner > .vfvm-card{max-width:780px;}
-/* Keep portrait Shorts at 9:16 width even in a mixed landscape SaaS category. */
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-grid > .vfvm-card.vfvm-card-portrait,
-#vf-view-visual-motions .vfvm-category-landscape .vfvm-reveal-inner > .vfvm-card.vfvm-card-portrait{max-width:460px;}
-#vf-view-visual-motions .vfvm-reveal-inner > .vfvm-card:first-child{margin-top:var(--vfvm-stack-gap);}
 #vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-reveal{
   grid-template-rows:1fr;
   visibility:visible;
@@ -4402,6 +4397,20 @@ html,body{margin:0}
   transition:
     grid-template-rows var(--vfvm-reveal-duration,2300ms) cubic-bezier(.45,.02,.20,1),
     visibility 0s;
+}
+@media(max-width:900px){
+  #vf-view-visual-motions .vfvm-category .vfvm-grid,
+  #vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-grid,
+  #vf-view-visual-motions .vfvm-reveal-inner{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:600px){
+  #vf-view-visual-motions .vfvm-category .vfvm-grid,
+  #vf-view-visual-motions .vfvm-category.vfvm-expanded .vfvm-grid,
+  #vf-view-visual-motions .vfvm-reveal-inner{
+    grid-template-columns:minmax(0,1fr);
+  }
 }
 @media(prefers-reduced-motion:reduce){
   #vf-view-visual-motions .vfvm-reveal,
@@ -4729,13 +4738,8 @@ body.is-entered #vf-view-home{transform:scale(1);}
 </section>
 
 <section class="vfvm-category vfvm-category-landscape" aria-labelledby="vfvm-saas-title" data-vfvm-category="saas">
-<div class="vfvm-category-top"><div class="vfvm-category-copy"><p class="vfvm-category-index">03 / FEATURED CATEGORY</p><h2 id="vfvm-saas-title" class="vfvm-category-name">SaaS Video</h2><p class="vfvm-category-description">Software storytelling and product visuals that help people understand digital tools at a glance.</p></div><span class="vfvm-category-total">02 PROJECTS</span></div>
-<div class="vfvm-grid"><article class="vfvm-card"><div class="vfvm-media" data-vfvm-video-format="landscape" data-vfvm-video="xG5opRGybr8"><button type="button" class="vfvm-poster" aria-label="Play SaaS video 01"><img src="https://i.ytimg.com/vi/xG5opRGybr8/hqdefault.jpg" alt="SaaS video 01 video thumbnail" loading="lazy" decoding="async" width="1280" height="720" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>01 / SELECTED WORK</span><span>LANDSCAPE FILM / 16:9</span></div></article>
-<article class="vfvm-card vfvm-card-portrait">
-<div class="vfvm-media" data-vfvm-video="yjAl27YopVY"><button type="button" class="vfvm-poster" aria-label="Play SaaS video 02">
-<img src="https://i.ytimg.com/vi/yjAl27YopVY/oar2.jpg" alt="SaaS video 02 video thumbnail" loading="lazy" decoding="async" width="720" height="1280" referrerpolicy="no-referrer"/>
-<span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div>
-<div class="vfvm-meta"><span>02 / SELECTED WORK</span><span>PORTRAIT FILM / 9:16</span></div></article></div>
+<div class="vfvm-category-top"><div class="vfvm-category-copy"><p class="vfvm-category-index">03 / FEATURED CATEGORY</p><h2 id="vfvm-saas-title" class="vfvm-category-name">SaaS Video</h2><p class="vfvm-category-description">Software storytelling and product visuals that help people understand digital tools at a glance.</p></div><span class="vfvm-category-total">01 PROJECT</span></div>
+<div class="vfvm-grid"><article class="vfvm-card"><div class="vfvm-media" data-vfvm-video-format="landscape" data-vfvm-video="xG5opRGybr8"><button type="button" class="vfvm-poster" aria-label="Play SaaS video 01"><img src="https://i.ytimg.com/vi/xG5opRGybr8/hqdefault.jpg" alt="SaaS video 01 video thumbnail" loading="lazy" decoding="async" width="1280" height="720" referrerpolicy="no-referrer"/><span aria-hidden="true" class="vfvm-play-icon"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="m8 5 12 7-12 7V5Z"/></svg></span><span class="vfvm-poster-note">PRESS PLAY / WATCH FILM</span></button></div><div class="vfvm-meta"><span>01 / SELECTED WORK</span><span>LANDSCAPE FILM / 16:9</span></div></article></div>
 <div class="vfvm-more-wrap"><button type="button" class="vfvm-more" aria-controls="vfvm-saas-title">Load More <span class="vfvm-more-count"></span></button></div>
 </section>
 </div></main>
@@ -6777,7 +6781,9 @@ render();
  page.querySelectorAll('[data-vfvm-category]').forEach(category=>{
    const grid=category.querySelector('.vfvm-grid');
    const cards=[...category.querySelectorAll('.vfvm-card')];
-   const extras=cards.slice(2);
+   // Show one complete row by default: three on desktop, two on tablet/mobile.
+   const previewCount=window.matchMedia('(min-width:901px)').matches?3:2;
+   const extras=cards.slice(previewCount);
    const more=category.querySelector('.vfvm-more');
    const moreCount=category.querySelector('.vfvm-more-count');
    if(!grid||!more||!moreCount)return;
@@ -6926,9 +6932,9 @@ render();
        reveal.setAttribute('aria-hidden',String(!expanded));
        category.classList.toggle('vfvm-expanded',expanded);
        more.firstChild.textContent=expanded?'Show Less ':'Load More ';
-       moreCount.textContent=expanded?'(Back to 2)':'('+extras.length+' more)';
+       moreCount.textContent=expanded?'(Back to '+previewCount+')':'('+extras.length+' more)';
        more.setAttribute('aria-expanded',String(expanded));
-       more.setAttribute('aria-label',expanded?'Show less: return to the first two videos':'Load more videos in this category');
+       more.setAttribute('aria-label',expanded?'Show less: return to the initial videos':'Load more videos in this category');
        if(expanded)scrollToFirstRevealed();
      });
    }
