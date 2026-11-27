@@ -4471,6 +4471,46 @@ SOFTWARE. Brand SVGs from Simple Icons (subject to brand guidelines).
 /* The final nav row already draws the lower divider: prevent a second line just below it. */
 @media(max-width:760px){#main-navigation .menu-bottom{border-top:0!important;}}
 </style>
+<style id="vf-charges-handoff-style">
+html.vf-charges-waiting::before{content:"";position:fixed;inset:0;z-index:499;pointer-events:none;background:#111611}
+html.vf-charges-handoff .vf-curtain-system{visibility:visible!important;pointer-events:auto!important}
+html.vf-charges-handoff #preloader{display:none!important}
+</style>
+<script id="vf-charges-handoff-preflight">(function(){
+try{
+ const raw=sessionStorage.getItem('vf-charges-handoff-v2');
+ const data=raw?JSON.parse(raw):null;
+ if(!data||!data.at||Date.now()-data.at>20000||data.hash!==location.hash){
+   if(raw){sessionStorage.removeItem('vf-charges-handoff-v2');sessionStorage.removeItem('vf-wipe-v14')}
+   return;
+ }
+ window.__vfChargesIncomingHandoff=data;
+ document.documentElement.classList.add('vf-charges-handoff','vf-charges-waiting');
+ const observer=new MutationObserver(()=>{
+   const system=document.getElementById('vf-curtain-system');
+   const curtain=document.getElementById('vf-curtain');
+   const label=document.getElementById('vf-curtain-word');
+   if(!system||!curtain||!label)return;
+   if(data.home){
+     const logo=document.createElement('img');
+     logo.className='vf-home-transition-mark';
+     logo.src='assets/media/be5f484c23a19e9923.png';
+     logo.alt='VIEWFINITY';
+     label.replaceChildren(logo);
+   } else label.textContent=data.title||'Contact';
+   label.classList.toggle('is-home-symbol',!!data.home);
+   label.classList.toggle('is-long',!data.home&&String(data.title||'').length>17);
+   curtain.style.transform='translate3d(0,0,0)';
+   const top=curtain.querySelector('.vf-curtain-cap.top');
+   if(top)top.style.transform='scaleY(.28)';
+   label.style.opacity='1';
+   label.style.transform='translate3d(0,0,0)';
+   system.classList.add('is-active');
+   observer.disconnect();
+ });
+ observer.observe(document,{childList:true,subtree:true});
+}catch(error){console.warn('VIEWFINITY charges handoff init',error)}
+})();</script>
 </head>
 <body class="vf255-initial-home">
 <style id="vf202-hero-flip-scale">
@@ -9326,4 +9366,5 @@ body.vf-offline-active{overflow:hidden!important}
  }
 })();
 </script>
+<script defer src="/charges/bridge-in.js"></script>
 </body></html>
