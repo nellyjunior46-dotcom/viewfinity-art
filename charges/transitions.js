@@ -1,120 +1,95 @@
-(() => {
-  'use strict';
-  const system=document.getElementById('vf-curtain-system');
-  const curtain=document.getElementById('vf-curtain');
-  const label=document.getElementById('vf-curtain-word');
-  const topCurve=curtain?.querySelector('.vf-curtain-cap.top');
-  const bottomCurve=curtain?.querySelector('.vf-curtain-cap.bottom');
-  if(!system||!curtain||!label||!topCurve||!bottomCurve)return;
-  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const storageKey='vfChargesPageTransitionV1';
-  const normalize=path=>{
-    let result=path.replace(/\/index\.html$/i,'/');
-    if(!result.endsWith('/'))result+='/';
-    return result;
-  };
-  const titles={
-    '/charges/':'Our Services',
-    '/charges/weddings/':'Wedding Packages',
-    '/charges/video-editing/':'Video Editing Packages',
-    '/charges/graduation/':'Graduation Packages',
-    '/charges/social-media-management/':'Social Media Management',
-    '/charges/corporate-coverage/':'Corporate Coverage',
-    '/charges/photography-and-events/':'Photography & Events'
-  };
-  const elements=[curtain,topCurve,bottomCurve,label];
-  const cancel=()=>elements.forEach(el=>el.getAnimations().forEach(animation=>animation.cancel()));
-  const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
-  const hold=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-  const setLabel=(name,home)=>{
-    if(home){
-      const img=document.createElement('img');
-      img.className='vf-home-transition-mark';
-      img.alt='VIEWFINITY';
-      img.decoding='async';
-      img.src='/assets/media/be5f484c23a19e9923.png';
-      label.replaceChildren(img);
-    }else label.textContent=name;
-    label.classList.toggle('is-home-symbol',!!home);
-    label.classList.toggle('is-long',!home&&name.length>17);
-  };
-  const reset=()=>{
-    cancel();
-    document.documentElement.classList.remove('vf-charges-incoming','vf-charges-leaving');
-    system.classList.remove('is-active');
-    curtain.style.transform='translate3d(0,118%,0)';
-    topCurve.style.transform='scaleY(.12)';
-    bottomCurve.style.transform='scaleY(.12)';
-    label.style.opacity='0';
-    label.style.transform='translate3d(0,48px,0)';
-  };
-  let busy=false;
-  async function cover(nextName,home=false){
-    setLabel(nextName,home);
-    reset();
-    document.documentElement.classList.add('vf-charges-leaving');
-    system.classList.add('is-active');
-    await frame();
-    const timing='cubic-bezier(.76,0,.19,1)';
-    const rise=curtain.animate([{transform:'translate3d(0,118%,0)'},{transform:'translate3d(0,0,0)'}],{duration:820,easing:timing,fill:'forwards'});
-    const bend=topCurve.animate([{transform:'scaleY(.12)',offset:0},{transform:'scaleY(1)',offset:.44},{transform:'scaleY(.28)',offset:1}],{duration:820,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
-    const word=label.animate([{opacity:0,transform:'translate3d(0,48px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:430,delay:270,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
-    await Promise.all([rise.finished,bend.finished,word.finished]);
-    curtain.style.transform='translate3d(0,0,0)';
-    topCurve.style.transform='scaleY(.28)';
-    label.style.opacity='1';
-    label.style.transform='translate3d(0,0,0)';
-    rise.cancel();bend.cancel();word.cancel();
-  }
-  async function reveal(){
-    // Continuation of the same wipe after the next HTML page has loaded.
-    const pending=document.documentElement.classList.contains('vf-charges-incoming');
-    try{sessionStorage.removeItem(storageKey)}catch(_){}
-    if(!pending)return;
-    busy=true;
-    system.classList.add('is-active');
-    curtain.style.transform='translate3d(0,0,0)';
-    topCurve.style.transform='scaleY(.28)';
-    label.style.opacity='1';
-    label.style.transform='translate3d(0,0,0)';
-    await frame();
-    await hold(230);
-    try{
-      const timing='cubic-bezier(.76,0,.19,1)';
-      const exit=curtain.animate([{transform:'translate3d(0,0,0)'},{transform:'translate3d(0,-118%,0)'}],{duration:930,easing:timing,fill:'forwards'});
-      const bend=bottomCurve.animate([{transform:'scaleY(.20)',offset:0},{transform:'scaleY(1)',offset:.49},{transform:'scaleY(.12)',offset:1}],{duration:930,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
-      const word=label.animate([{opacity:1,transform:'translate3d(0,0,0)'},{opacity:0,transform:'translate3d(0,-38px,0)'}],{duration:440,delay:270,easing:'cubic-bezier(.42,0,.86,1)',fill:'forwards'});
-      const main=document.querySelector('.page-main');
-      if(main)main.animate([{transform:'translate3d(0,25px,0)'},{transform:'translate3d(0,0,0)'}],{duration:850,delay:160,easing:'cubic-bezier(.22,1,.36,1)'});
-      await Promise.all([exit.finished,bend.finished,word.finished]);
-    }catch(error){if(error?.name!=='AbortError')console.warn('VIEWFINITY Charges entrance interrupted',error)}
-    finally{reset();busy=false}
-  }
-  document.addEventListener('click',event=>{
-    if(busy||reduce||!navigator.onLine||event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
-    const anchor=event.target.closest('a[href]');
-    if(!anchor||anchor.hasAttribute('download')||(anchor.target&&anchor.target!=='_self'))return;
-    let url;
-    try{url=new URL(anchor.href,location.href)}catch(_){return}
-    if(url.origin!==location.origin||!/^https?:$/.test(url.protocol))return;
-    const targetPath=normalize(url.pathname);
-    const currentPath=normalize(location.pathname);
-    if(targetPath===currentPath && url.hash===location.hash)return;
-    const targetName=titles[targetPath]||(url.hash.startsWith('#/contact')?'Contact':url.hash.startsWith('#/about')?'About':'Home');
-    const goingHome=targetPath==='/'&&!url.hash.startsWith('#/contact')&&!url.hash.startsWith('#/about');
-    event.preventDefault();
-    busy=true;
-    (async()=>{
-      try{
-        await cover(targetName,goingHome);
-        // Same-origin cross-document pages: complete the curtain on the destination.
-        if(targetPath.startsWith('/charges/')){
-          try{sessionStorage.setItem(storageKey,JSON.stringify({pathname:targetPath,started:Date.now()}))}catch(_){}
-        }
-      }catch(error){console.warn('VIEWFINITY Charges transition interrupted',error)}
-      location.assign(url.href);
-    })();
-  },true);
-  window.addEventListener('pageshow',event=>{if(event.persisted){busy=false;reset()}});
-  reveal();
+/* VIEWFINITY Charges: same-document routing beneath the site's exact V1.12 curved curtain. Generated from the seven canonical package pages. */
+(()=>{
+ 'use strict';
+ const pages={"/charges/":{"title":"Our Services","main":"<main id=\"top\" class=\"page-main\"><section class=\"package-section shell\" id=\"packages\"><div class=\"section-heading\"><div><p class=\"eyebrow\">DISCOVER OUR SERVICES</p><h2>What are we creating?</h2><p class=\"section-description\">Explore our creative services and find the package that fits your project.</p></div></div><div class=\"work-list\" aria-label=\"Available service packages\"><a class=\"work-line\" href=\"/charges/weddings/\" aria-label=\"Explore Wedding Packages\"><span class=\"work-number\">01</span><span class=\"work-title\">Wedding Packages</span><span class=\"work-discipline\">Wedding photography & films</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a>\n<a class=\"work-line\" href=\"/charges/video-editing/\" aria-label=\"Explore Video Editing Packages\"><span class=\"work-number\">02</span><span class=\"work-title\">Video Editing Packages</span><span class=\"work-discipline\">Post-production & storytelling</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a>\n<a class=\"work-line\" href=\"/charges/graduation/\" aria-label=\"Explore Graduation Packages\"><span class=\"work-number\">03</span><span class=\"work-title\">Graduation Packages</span><span class=\"work-discipline\">Portraits & milestone films</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a>\n<a class=\"work-line\" href=\"/charges/social-media-management/\" aria-label=\"Explore Social Media Management\"><span class=\"work-number\">04</span><span class=\"work-title\">Social Media Management</span><span class=\"work-discipline\">Content, strategy & management</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a>\n<a class=\"work-line\" href=\"/charges/corporate-coverage/\" aria-label=\"Explore Corporate Coverage\"><span class=\"work-number\">05</span><span class=\"work-title\">Corporate Coverage</span><span class=\"work-discipline\">Photography, video & live coverage</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a>\n<a class=\"work-line\" href=\"/charges/photography-and-events/\" aria-label=\"Explore Photography & Events\"><span class=\"work-number\">06</span><span class=\"work-title\">Photography & Events</span><span class=\"work-discipline\">Portraits, lifestyle & occasions</span><span class=\"work-arrow\" aria-hidden=\"true\">↗</span></a></div></section><section class=\"custom\"><div class=\"shell\"><p class=\"eyebrow\">A DIFFERENT KIND OF PROJECT?</p><h2>Have something <em>else in mind?</em></h2><div class=\"custom-bottom\"><p>Tell us what you're planning. We'll work with you to shape a package around your vision, requirements, and budget.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\"><span>LET'S TALK ABOUT YOUR PROJECT</span></a></div></div></section></main>"},"/charges/weddings/":{"title":"Wedding Packages","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 01 / OUR SERVICES</p><h1>Wedding <em>Packages</em></h1><p class=\"detail-summary\">A timeless way to document the emotion, connection, and details of your celebration.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">Every wedding has its own rhythm, people, and moments worth remembering. VIEWFINITY approaches wedding coverage through thoughtful storytelling, photography, and filmmaking.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Wedding photography</li><li>Wedding videography</li><li>Highlight films</li><li>Extended event coverage</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"},"/charges/video-editing/":{"title":"Video Editing Packages","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 02 / OUR SERVICES</p><h1>Video <em>Editing Packages</em></h1><p class=\"detail-summary\">From raw footage to a carefully finished film, every cut should have a purpose.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">Whether the project is a short social video or a larger production, we shape the edit around your message, audience, pacing, and visual identity.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Social video edits</li><li>Promotional & commercial edits</li><li>Documentary & long-form editing</li><li>Post-production finishing</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"},"/charges/graduation/":{"title":"Graduation Packages","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 03 / OUR SERVICES</p><h1>Graduation <em>Packages</em></h1><p class=\"detail-summary\">Your milestone deserves to be remembered beyond the day itself.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">We create graduation memories through portraits, celebration coverage, and thoughtful visual storytelling, tailored to the moments you want to hold onto.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Graduation portraits</li><li>Individual or group sessions</li><li>Celebration coverage</li><li>Video highlights</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"},"/charges/social-media-management/":{"title":"Social Media Management","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 04 / OUR SERVICES</p><h1>Social <em>Media Management</em></h1><p class=\"detail-summary\">A digital presence built around your voice, not someone else's template.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">We help brands communicate consistently and creatively across social platforms, with services shaped around your audience, business goals, and available content.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Content strategy & planning</li><li>Creative content production</li><li>Platform management</li><li>Campaign content</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"},"/charges/corporate-coverage/":{"title":"Corporate Coverage","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 05 / OUR SERVICES</p><h1>Corporate <em>Coverage</em></h1><p class=\"detail-summary\">Coverage that communicates the atmosphere and importance of your event.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">From conferences and ceremonies to business launches, we create professional visual records and event-led content with your organization and audience in mind.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Corporate event photography</li><li>Event videography</li><li>Live event content</li><li>Recap & highlight edits</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"},"/charges/photography-and-events/":{"title":"Photography & Events","main":"<main id=\"top\" class=\"page-main\"><section class=\"detail-hero shell\"><a class=\"back-link\" href=\"/charges/\">← &nbsp; ALL PACKAGES</a><p class=\"eyebrow\">VIEWFINITY / 06 / OUR SERVICES</p><h1>Photography <em>& Events</em></h1><p class=\"detail-summary\">Images that feel true to the people and moments behind them.</p></section><div class=\"detail-main shell\"><section class=\"detail-row\"><span class=\"detail-label\">01 / OVERVIEW</span><p class=\"detail-copy\">We photograph people, gatherings, and experiences in a way that balances clean composition with authentic moments and thoughtful finishing.</p></section><section class=\"detail-row\"><span class=\"detail-label\">02 / SERVICES TO EXPLORE</span><ul class=\"detail-list\"><li>Portrait photography</li><li>Lifestyle sessions</li><li>Social event coverage</li><li>Edited photo delivery</li></ul></section><section class=\"detail-row\"><span class=\"detail-label\">03 / PACKAGE INFORMATION</span><p class=\"detail-note\">Specific package tiers, inclusions, pricing, and deliverables will be added to this page as they are finalized. For now, contact us for a tailored breakdown based on your project.</p></section></div><section class=\"detail-cta\"><div class=\"shell\"><p class=\"eyebrow\">TAKE THE NEXT STEP</p><h2>Let's make something <span style=\"color:#A5B86A\">remarkable.</span></h2><div class=\"custom-bottom\"><p>We can discuss the scope, what matters most to you, and the options available for your project.</p><a class=\"vf-master-cta\" href=\"https://viewfinity.art/#/contact\">ENQUIRE ABOUT THIS PACKAGE</a></div></div></section></main>"}};
+ const system=document.getElementById('vf-curtain-system');
+ const panel=document.getElementById('vf-curtain');
+ const label=document.getElementById('vf-curtain-word');
+ const top=panel?.querySelector('.vf-curtain-cap.top');
+ const bottom=panel?.querySelector('.vf-curtain-cap.bottom');
+ if(!system||!panel||!label||!top||!bottom)return;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const normalize=path=>{let p=path.replace(/\/index\.html$/i,'/');if(!p.endsWith('/'))p+='/';return p};
+ let active=normalize(location.pathname),busy=false,queued=null;
+ const animated=[panel,top,bottom,label];
+ const cancel=()=>animated.forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
+ const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
+ const reset=()=>{
+   cancel();system.classList.remove('is-active');
+   document.documentElement.classList.remove('vf-charges-leaving','vf-charges-incoming');
+   panel.style.transform='translate3d(0,118%,0)';
+   top.style.transform='scaleY(.12)';bottom.style.transform='scaleY(.12)';
+   label.style.opacity='0';label.style.transform='translate3d(0,48px,0)';
+ };
+ function switchContent(path,push){
+   const page=pages[path];if(!page)return null;
+   const template=document.createElement('template');template.innerHTML=page.main;
+   const next=template.content.querySelector('main.page-main');
+   const old=document.querySelector('main.page-main');
+   if(!old||!next)throw Error('VIEWFINITY Charges: missing route main');
+   old.replaceWith(next);
+   active=path;document.title=page.title+' | VIEWFINITY';
+   if(push)history.pushState({vfChargesPath:path},'',path);
+   window.scrollTo({top:0,left:0,behavior:'instant'});
+   return next;
+ }
+ async function go(path,push=true){
+   if(!pages[path])return;
+   if(busy){queued={path,push};return}
+   if(path===active)return;
+   if(reduce||typeof panel.animate!=='function'){switchContent(path,push);return}
+   busy=true;let didSwitch=false;
+   try{
+     reset();
+     const name=pages[path].title;
+     label.textContent=name;
+     label.classList.remove('is-home-symbol');
+     label.classList.toggle('is-long',name.length>17);
+     document.documentElement.classList.add('vf-charges-leaving');
+     system.classList.add('is-active');
+     await frame();
+     const timing='cubic-bezier(.76,0,.19,1)';
+     // Copy of main VIEWFINITY timing: 820ms entry, 430ms title after 270ms.
+     const up=panel.animate([{transform:'translate3d(0,118%,0)'},{transform:'translate3d(0,0,0)'}],{duration:820,easing:timing,fill:'forwards'});
+     const capIn=top.animate([{transform:'scaleY(.12)',offset:0},{transform:'scaleY(1)',offset:.44},{transform:'scaleY(.28)',offset:1}],{duration:820,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+     const wordIn=label.animate([{opacity:0,transform:'translate3d(0,48px,0)'},{opacity:1,transform:'translate3d(0,0,0)'}],{duration:430,delay:270,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'});
+     await Promise.all([up.finished,capIn.finished,wordIn.finished]);
+     panel.style.transform='translate3d(0,0,0)';
+     top.style.transform='scaleY(.28)';
+     label.style.opacity='1';label.style.transform='translate3d(0,0,0)';
+     up.cancel();capIn.cancel();wordIn.cancel();
+     // Crucial fix: swap immediately while covered. NO navigation reload, NO network wait.
+     const nextMain=switchContent(path,push);didSwitch=true;
+     await frame();
+     await new Promise(resolve=>setTimeout(resolve,230));
+     // Copy of main VIEWFINITY timing: 930ms exit, 440ms title after 270ms.
+     const down=panel.animate([{transform:'translate3d(0,0,0)'},{transform:'translate3d(0,-118%,0)'}],{duration:930,easing:timing,fill:'forwards'});
+     const capOut=bottom.animate([{transform:'scaleY(.20)',offset:0},{transform:'scaleY(1)',offset:.49},{transform:'scaleY(.12)',offset:1}],{duration:930,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+     const wordOut=label.animate([{opacity:1,transform:'translate3d(0,0,0)'},{opacity:0,transform:'translate3d(0,-38px,0)'}],{duration:440,delay:270,easing:'cubic-bezier(.42,0,.86,1)',fill:'forwards'});
+     nextMain.animate([{transform:'translate3d(0,25px,0)'},{transform:'translate3d(0,0,0)'}],{duration:850,delay:160,easing:'cubic-bezier(.22,1,.36,1)'});
+     await Promise.all([down.finished,capOut.finished,wordOut.finished]);
+   }catch(error){
+     if(error?.name!=='AbortError')console.warn('VIEWFINITY transition interrupted',error);
+     if(!didSwitch){try{switchContent(path,push)}catch(e){console.warn('VIEWFINITY content switch failed',e)}}
+   }finally{
+     reset();busy=false;
+     if(queued){const next=queued;queued=null;requestAnimationFrame(()=>go(next.path,next.push))}
+   }
+ }
+ document.addEventListener('click',event=>{
+   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+   const a=event.target.closest('a[href]');
+   if(!a||a.hasAttribute('download')||(a.target&&a.target!=='_self'))return;
+   let target;try{target=new URL(a.href,location.href)}catch(_){return}
+   if(target.origin!==location.origin||target.hash)return;
+   const path=normalize(target.pathname);
+   if(!pages[path]||path===active)return;
+   event.preventDefault();go(path,true);
+ },true);
+ window.addEventListener('popstate',()=>{
+   const path=normalize(location.pathname);
+   if(pages[path]&&path!==active)go(path,false);
+ });
+ window.addEventListener('pageshow',event=>{if(event.persisted){busy=false;queued=null;reset()}});
+ reset();
 })();
