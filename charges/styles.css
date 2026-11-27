@@ -78,4 +78,13 @@
  .custom h2{font-size:clamp(44px,12.1vw,50px)}
 }
 
+
+/* Mobile VIEWFINITY categories: editorial tabs, not boxed two-column buttons. */
+@media(max-width:760px){
+ .filters{display:flex;flex-direction:row;flex-wrap:nowrap;gap:26px;width:auto;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;margin:0 calc(-1 * var(--page-pad)) 30px 0;padding:0 var(--page-pad) 0 0;border-top:1px solid #354234;border-bottom:1px solid #354234}
+ .filters::-webkit-scrollbar{display:none}
+ .filter,.filter:first-child{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;grid-column:auto;scroll-snap-align:start;min-height:52px;padding:18px 0 16px;margin:0;background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;color:#AAB6A5;font-family:var(--font-body);font-size:13px;font-weight:450;letter-spacing:0;white-space:nowrap;text-align:center;line-height:1.25;cursor:pointer}
+ .filter[aria-pressed="true"]{border-color:#CADA6F;background:transparent;color:#F5F7F2}
+}
+@media(max-width:360px){.filters{gap:22px}.filter,.filter:first-child{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
